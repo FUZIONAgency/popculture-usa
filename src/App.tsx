@@ -24,7 +24,6 @@ import TournamentDetail from "./pages/TournamentDetail";
 const queryClient = new QueryClient();
 
 // Placeholder components for new routes
-const Retailers = () => <div>Retailers Page (Coming Soon)</div>;
 const Games = () => <div>Games Page (Coming Soon)</div>;
 
 const Layout = ({ children }: { children: React.ReactNode }) => (
@@ -49,7 +48,6 @@ const App = () => (
           <Route path="/" element={<Layout><Index /></Layout>} />
           <Route path="/tournaments" element={<Layout><Tournaments /></Layout>} />
           <Route path="/tournaments/:id" element={<Layout><TournamentDetail /></Layout>} />
-          <Route path="/retailers" element={<Layout><Retailers /></Layout>} />
           <Route path="/conventions" element={<Layout><Conventions /></Layout>} />
           <Route path="/conventions/:id" element={<Layout><ConventionDetail /></Layout>} />
           <Route path="/games" element={<Layout><Games /></Layout>} />

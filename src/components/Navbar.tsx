@@ -47,9 +47,6 @@ const Navbar = () => {
       <Link to="/tournaments" className="text-white hover:text-red-500 transition-colors">
         Tournaments
       </Link>
-      <Link to="/retailers" className="text-white hover:text-red-500 transition-colors">
-        Retailers
-      </Link>
       <Link to="/conventions" className="text-white hover:text-red-500 transition-colors">
         Conventions
       </Link>
