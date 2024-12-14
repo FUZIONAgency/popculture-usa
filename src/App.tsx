@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -42,22 +42,19 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
-          <Route element={<Layout>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/tournaments" element={<Tournaments />} />
-              <Route path="/tournaments/:id" element={<TournamentDetail />} />
-              <Route path="/retailers" element={<Retailers />} />
-              <Route path="/conventions" element={<Conventions />} />
-              <Route path="/conventions/:id" element={<ConventionDetail />} />
-              <Route path="/games" element={<Games />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-conditions" element={<TermsConditions />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/media-kit" element={<MediaKit />} />
-              <Route path="/metrics" element={<Metrics />} />
-            </Routes>
-          </Layout>} />
+          <Route path="/" element={<Layout><Index /></Layout>} />
+          <Route path="/tournaments" element={<Layout><Tournaments /></Layout>} />
+          <Route path="/tournaments/:id" element={<Layout><TournamentDetail /></Layout>} />
+          <Route path="/retailers" element={<Layout><Retailers /></Layout>} />
+          <Route path="/conventions" element={<Layout><Conventions /></Layout>} />
+          <Route path="/conventions/:id" element={<Layout><ConventionDetail /></Layout>} />
+          <Route path="/games" element={<Layout><Games /></Layout>} />
+          <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
+          <Route path="/terms-conditions" element={<Layout><TermsConditions /></Layout>} />
+          <Route path="/contact" element={<Layout><Contact /></Layout>} />
+          <Route path="/media-kit" element={<Layout><MediaKit /></Layout>} />
+          <Route path="/metrics" element={<Layout><Metrics /></Layout>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
