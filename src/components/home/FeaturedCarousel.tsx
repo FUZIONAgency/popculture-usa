@@ -46,11 +46,17 @@ export const FeaturedCarousel = ({ items }: FeaturedCarouselProps) => {
               <div 
                 className="relative w-full h-full"
               >
-                <img 
-                  src={item.image_url} 
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
+                {item.image_url ? (
+                  <img 
+                    src={item.image_url} 
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-gray-500">No image available</span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white p-8">
                   <span className="text-sm uppercase tracking-wider mb-2">
                     Featured {item.type}

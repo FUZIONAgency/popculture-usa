@@ -32,21 +32,21 @@ const Index = () => {
         // Fetch featured convention
         const { data: conventionData } = await supabase
           .from('conventions')
-          .select('id, name, description, image_url')
+          .select('id, name, description, carousel_image')
           .eq('is_featured', true)
           .single();
 
         // Fetch featured tournament
         const { data: tournamentData } = await supabase
           .from('tournaments')
-          .select('id, title, description, image_url')
+          .select('id, title, description, carousel_image')
           .eq('is_featured', true)
           .single();
 
         // Fetch featured retailer
         const { data: retailerData } = await supabase
           .from('retailers')
-          .select('id, name, description, store_photo')
+          .select('id, name, description, carousel_image')
           .eq('is_featured', true)
           .single();
 
@@ -57,7 +57,7 @@ const Index = () => {
             id: conventionData.id,
             title: conventionData.name,
             description: conventionData.description,
-            image_url: conventionData.carousel_image,
+            image_url: conventionData.carousel_image || '',
             type: 'convention'
           });
         }
@@ -67,7 +67,7 @@ const Index = () => {
             id: tournamentData.id,
             title: tournamentData.title,
             description: tournamentData.description,
-            image_url: tournamentData.carousel_image,
+            image_url: tournamentData.carousel_image || '',
             type: 'tournament'
           });
         }
@@ -77,7 +77,7 @@ const Index = () => {
             id: retailerData.id,
             title: retailerData.name,
             description: retailerData.description,
-            image_url: retailerData.carousel_image,
+            image_url: retailerData.carousel_image || '',
             type: 'retailer'
           });
         }
