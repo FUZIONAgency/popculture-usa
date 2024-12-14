@@ -5,6 +5,8 @@ export interface Retailer {
   address: string;
   city: string;
   state: string;
+  zip: string;
   lat: number;
   lng: number;
+  status?: string;
 }

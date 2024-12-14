@@ -1,8 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
-import type { MapContainerProps } from "react-leaflet";
-import { LatLngExpression } from "leaflet";
+import type { LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { Retailer } from "@/types/retailers";
 
@@ -29,21 +28,19 @@ export default function RetailersMap({ retailers }: RetailersMapProps) {
   return (
     <div className="h-[600px] w-full rounded-lg overflow-hidden shadow-lg">
       <MapContainer
-        {...({center: centerPosition} as any)}
+        center={centerPosition}
         zoom={4}
         scrollWheelZoom={false}
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer
-          {...({
-            url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          } as any)}
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         {retailers.map((retailer) => (
           <Marker
             key={retailer.id}
-            position={[retailer.lat, retailer.lng] as LatLngExpression}
+            position={[retailer.lat, retailer.lng]}
             eventHandlers={{
               click: () => handleRetailerClick(retailer.id),
             }}
