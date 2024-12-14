@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { format } from "date-fns";
@@ -17,19 +16,9 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-
-const conventionColors = [
-  "#9b87f5", // Primary Purple
-  "#7E69AB", // Secondary Purple
-  "#6E59A5", // Tertiary Purple
-  "#8B5CF6", // Vivid Purple
-  "#D946EF", // Magenta Pink
-  "#F97316", // Bright Orange
-  "#0EA5E9", // Ocean Blue
-];
+import { ConventionCalendar } from "@/components/ConventionCalendar";
 
 const Conventions = () => {
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{
     key: keyof typeof conventions[0] | null;
@@ -50,25 +39,6 @@ const Conventions = () => {
   });
 
   const nextTwoConventions = conventions?.slice(0, 2) || [];
-  
-  // Assign a color to each convention
-  const calendarDates = conventions?.map((conv, index) => ({
-    start: new Date(conv.start_date),
-    end: new Date(conv.end_date),
-    title: conv.name,
-    color: conventionColors[index % conventionColors.length], // Rotate through colors
-  })) || [];
-
-  // Custom styles for calendar events
-  const modifiersStyles = calendarDates.reduce((acc, event, index) => {
-    const color = conventionColors[index % conventionColors.length];
-    acc[`convention-${index}`] = {
-      backgroundColor: color,
-      color: '#ffffff',
-      borderRadius: '4px',
-    };
-    return acc;
-  }, {});
 
   // Filter and sort conventions
   const filteredAndSortedConventions = conventions
@@ -97,20 +67,6 @@ const Conventions = () => {
       direction:
         sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc",
     });
-  };
-
-  // Function to handle calendar date click
-  const handleDateClick = (date: Date) => {
-    // Find convention that matches the clicked date
-    const matchingConvention = conventions?.find(conv => {
-      const startDate = new Date(conv.start_date);
-      const endDate = new Date(conv.end_date);
-      return date >= startDate && date <= endDate;
-    });
-
-    if (matchingConvention) {
-      navigate(`/conventions/${matchingConvention.id}`);
-    }
   };
 
   return (
@@ -156,27 +112,7 @@ const Conventions = () => {
         <section className="mb-12 -mx-4 px-4 bg-white shadow-md py-8">
           <div className="container mx-auto">
             <h2 className="text-2xl font-bold mb-6">Convention Calendar</h2>
-            <div className="w-full">
-              <Calendar 
-                mode="range"
-                selected={{
-                  from: calendarDates[0]?.start,
-                  to: calendarDates[calendarDates.length - 1]?.end
-                }}
-                modifiers={{
-                  ...calendarDates.reduce((acc, _, index) => ({
-                    ...acc,
-                    [`convention-${index}`]: { 
-                      from: calendarDates[index].start,
-                      to: calendarDates[index].end 
-                    }
-                  }), {})
-                }}
-                modifiersStyles={modifiersStyles}
-                className="w-full border rounded-lg p-4"
-                onDayClick={handleDateClick}
-              />
-            </div>
+            <ConventionCalendar conventions={conventions || []} />
           </div>
         </section>
 
