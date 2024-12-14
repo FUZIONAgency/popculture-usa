@@ -27,7 +27,7 @@ export const RetailersMapView = ({
       center={center}
       zoom={4}
       scrollWheelZoom={false}
-      style={{ height: '400px', width: '100%' }}
+      style={{ height: '520px', width: '100%' }} {/* Increased from 400px to 520px (30% increase) */}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
