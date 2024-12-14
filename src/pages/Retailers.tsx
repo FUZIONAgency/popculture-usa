@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
+import type { MapContainerProps } from "react-leaflet";
+import { LatLngExpression } from "leaflet";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import "leaflet/dist/leaflet.css";
@@ -57,6 +59,8 @@ export default function Retailers() {
     return <div>Loading...</div>;
   }
 
+  const centerPosition: LatLngExpression = [39.8283, -98.5795]; // Center of USA
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
@@ -71,7 +75,7 @@ export default function Retailers() {
 
       <div className="h-[600px] w-full rounded-lg overflow-hidden shadow-lg">
         <MapContainer
-          center={[39.8283, -98.5795]} // Center of USA
+          center={centerPosition}
           zoom={4}
           scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
@@ -83,7 +87,7 @@ export default function Retailers() {
           {filteredRetailers.map((retailer) => (
             <Marker
               key={retailer.id}
-              position={[retailer.lat, retailer.lng]}
+              position={[retailer.lat, retailer.lng] as LatLngExpression}
               eventHandlers={{
                 click: () => handleRetailerClick(retailer.id),
               }}

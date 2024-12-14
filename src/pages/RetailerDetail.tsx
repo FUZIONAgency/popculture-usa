@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import type { MapContainerProps } from "react-leaflet";
+import { LatLngExpression } from "leaflet";
 import { supabase } from "@/integrations/supabase/client";
 import "leaflet/dist/leaflet.css";
 
@@ -41,6 +43,8 @@ export default function RetailerDetail() {
   if (isLoading || !retailer) {
     return <div>Loading...</div>;
   }
+
+  const position: LatLngExpression = [retailer.lat, retailer.lng];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -97,7 +101,7 @@ export default function RetailerDetail() {
 
             <div className="mt-8 h-[400px] rounded-lg overflow-hidden">
               <MapContainer
-                center={[retailer.lat, retailer.lng]}
+                center={position}
                 zoom={15}
                 scrollWheelZoom={false}
                 style={{ height: "100%", width: "100%" }}
@@ -106,7 +110,7 @@ export default function RetailerDetail() {
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
-                <Marker position={[retailer.lat, retailer.lng]}>
+                <Marker position={position}>
                   <Popup>
                     <div>
                       <h3 className="font-bold">{retailer.name}</h3>
