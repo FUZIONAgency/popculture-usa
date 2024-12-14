@@ -8,6 +8,17 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { format } from "date-fns";
 
+// Convention colors array for rotating through different colors
+const conventionColors = [
+  "#9b87f5", // Primary Purple
+  "#7E69AB", // Secondary Purple
+  "#6E59A5", // Tertiary Purple
+  "#8B5CF6", // Vivid Purple
+  "#D946EF", // Magenta Pink
+  "#F97316", // Bright Orange
+  "#0EA5E9", // Ocean Blue
+];
+
 const Conventions = () => {
   const { data: conventions, isLoading } = useQuery({
     queryKey: ["conventions"],
@@ -23,11 +34,25 @@ const Conventions = () => {
   });
 
   const nextTwoConventions = conventions?.slice(0, 2) || [];
-  const calendarDates = conventions?.map(conv => ({
+  
+  // Assign a color to each convention
+  const calendarDates = conventions?.map((conv, index) => ({
     start: new Date(conv.start_date),
     end: new Date(conv.end_date),
-    title: conv.name
+    title: conv.name,
+    color: conventionColors[index % conventionColors.length], // Rotate through colors
   })) || [];
+
+  // Custom styles for calendar events
+  const modifiersStyles = calendarDates.reduce((acc, event, index) => {
+    const color = conventionColors[index % conventionColors.length];
+    acc[`convention-${index}`] = {
+      backgroundColor: color,
+      color: '#ffffff',
+      borderRadius: '4px',
+    };
+    return acc;
+  }, {});
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -68,18 +93,30 @@ const Conventions = () => {
           </div>
         </section>
 
-        {/* Calendar Section */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Convention Calendar</h2>
-          <div className="bg-white p-4 rounded-lg shadow">
-            <Calendar 
-              mode="range"
-              selected={{
-                from: calendarDates[0]?.start,
-                to: calendarDates[calendarDates.length - 1]?.end
-              }}
-              className="rounded-md border"
-            />
+        {/* Calendar Section - Now Full Width */}
+        <section className="mb-12 -mx-4 px-4 bg-white shadow-md py-8">
+          <div className="container mx-auto">
+            <h2 className="text-2xl font-bold mb-6">Convention Calendar</h2>
+            <div className="w-full">
+              <Calendar 
+                mode="range"
+                selected={{
+                  from: calendarDates[0]?.start,
+                  to: calendarDates[calendarDates.length - 1]?.end
+                }}
+                modifiers={{
+                  ...calendarDates.reduce((acc, _, index) => ({
+                    ...acc,
+                    [`convention-${index}`]: { 
+                      from: calendarDates[index].start,
+                      to: calendarDates[index].end 
+                    }
+                  }), {})
+                }}
+                modifiersStyles={modifiersStyles}
+                className="w-full border rounded-lg p-4"
+              />
+            </div>
           </div>
         </section>
 
