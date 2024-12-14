@@ -1,11 +1,10 @@
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useState } from 'react';
 import { toast } from "sonner";
+import { MapSearch } from './MapSearch';
+import { MapMarker } from './MapMarker';
 
 // Fix for default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -56,7 +55,6 @@ interface RetailersMapProps {
 }
 
 export const RetailersMap = ({ retailers }: RetailersMapProps) => {
-  const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [searchRadius, setSearchRadius] = useState<string>("10");
   const [nearbyRetailerIds, setNearbyRetailerIds] = useState<Set<string>>(new Set());
@@ -76,13 +74,12 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
           const userLng = position.coords.longitude;
           setUserLocation([userLat, userLng]);
 
-          // Filter retailers within the specified radius (using Haversine formula)
+          // Filter retailers within the specified radius
           const nearbyRetailers = retailers.filter(retailer => {
             const distance = calculateDistance(userLat, userLng, retailer.lat, retailer.lng);
             return distance <= Number(searchRadius);
           });
 
-          // Update the set of nearby retailer IDs
           setNearbyRetailerIds(new Set(nearbyRetailers.map(r => r.id)));
           toast.success(`Found ${nearbyRetailers.length} retailers within ${searchRadius} miles`);
         },
@@ -96,7 +93,6 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
     }
   };
 
-  // Haversine formula to calculate distance between two points
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
     const R = 3959; // Earth's radius in miles
     const dLat = toRad(lat2 - lat1);
@@ -115,18 +111,11 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        <Input
-          type="number"
-          value={searchRadius}
-          onChange={(e) => setSearchRadius(e.target.value)}
-          placeholder="Search radius (miles)"
-          className="w-40"
-        />
-        <Button onClick={findNearbyRetailers}>
-          Find Nearby Retailers
-        </Button>
-      </div>
+      <MapSearch 
+        searchRadius={searchRadius}
+        onSearchRadiusChange={setSearchRadius}
+        onFindNearby={findNearbyRetailers}
+      />
       
       <MapContainer
         center={center}
@@ -139,30 +128,14 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         {retailers.map((retailer) => (
-          <Marker
+          <MapMarker
             key={retailer.id}
-            position={[retailer.lat, retailer.lng]}
+            retailer={retailer}
             icon={nearbyRetailerIds.has(retailer.id) ? nearbyIcon : defaultIcon}
-          >
-            <Popup>
-              <div className="space-y-2">
-                <h3 className="font-bold">{retailer.name}</h3>
-                <p>{retailer.address}</p>
-                <Button 
-                  onClick={() => navigate(`/retailers/${retailer.id}`)}
-                  className="w-full"
-                >
-                  Visit Now
-                </Button>
-              </div>
-            </Popup>
-          </Marker>
+          />
         ))}
         {userLocation && (
-          <Marker
-            position={userLocation}
-            icon={userIcon}
-          >
+          <Marker position={userLocation} icon={userIcon}>
             <Popup>Your Location</Popup>
           </Marker>
         )}
