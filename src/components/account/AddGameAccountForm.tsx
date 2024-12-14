@@ -37,6 +37,7 @@ interface AddGameAccountFormProps {
 
 export const AddGameAccountForm = ({ player }: AddGameAccountFormProps) => {
   const [gameSystems, setGameSystems] = useState<any[]>([]);
+  const [linkedGameSystems, setLinkedGameSystems] = useState<string[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -48,22 +49,46 @@ export const AddGameAccountForm = ({ player }: AddGameAccountFormProps) => {
   });
 
   useEffect(() => {
-    const fetchGameSystems = async () => {
-      const { data, error } = await supabase
-        .from('game_systems')
-        .select('*')
-        .eq('status', 'active');
+    const fetchGameSystemsAndLinked = async () => {
+      try {
+        // Fetch active game systems
+        const { data: gameSystemsData, error: gameSystemsError } = await supabase
+          .from('game_systems')
+          .select('*')
+          .eq('status', 'active');
 
-      if (error) {
-        console.error('Error fetching game systems:', error);
-        return;
+        if (gameSystemsError) throw gameSystemsError;
+
+        // Fetch player's linked game systems
+        const { data: linkedData, error: linkedError } = await supabase
+          .from('player_game_accounts')
+          .select('game_system_id')
+          .eq('player_id', player.id);
+
+        if (linkedError) throw linkedError;
+
+        // Get array of linked game system IDs
+        const linkedIds = linkedData.map(link => link.game_system_id);
+        setLinkedGameSystems(linkedIds);
+
+        // Filter out already linked game systems
+        const availableGameSystems = gameSystemsData?.filter(
+          system => !linkedIds.includes(system.id)
+        ) || [];
+
+        setGameSystems(availableGameSystems);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to load game systems. Please try again.',
+        });
       }
-
-      setGameSystems(data || []);
     };
 
-    fetchGameSystems();
-  }, []);
+    fetchGameSystemsAndLinked();
+  }, [player.id, toast]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { error } = await supabase.from('player_game_accounts').insert([
@@ -107,13 +132,17 @@ export const AddGameAccountForm = ({ player }: AddGameAccountFormProps) => {
                   <FormLabel>Game System</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-white">
                         <SelectValue placeholder="Select a game system" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="bg-white">
                       {gameSystems.map((system) => (
-                        <SelectItem key={system.id} value={system.id}>
+                        <SelectItem 
+                          key={system.id} 
+                          value={system.id}
+                          className="bg-white hover:bg-gray-100"
+                        >
                           {system.name}
                         </SelectItem>
                       ))}
@@ -146,14 +175,14 @@ export const AddGameAccountForm = ({ player }: AddGameAccountFormProps) => {
                   <FormLabel>Status</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-white">
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="active" className="bg-white hover:bg-gray-100">Active</SelectItem>
+                      <SelectItem value="inactive" className="bg-white hover:bg-gray-100">Inactive</SelectItem>
+                      <SelectItem value="pending" className="bg-white hover:bg-gray-100">Pending</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
