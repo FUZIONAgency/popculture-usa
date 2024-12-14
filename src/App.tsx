@@ -20,6 +20,7 @@ import MediaKit from "./pages/MediaKit";
 import Metrics from "./pages/Metrics";
 import Tournaments from "./pages/Tournaments";
 import TournamentDetail from "./pages/TournamentDetail";
+import Retailers from "./pages/Retailers";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/tournaments/:id" element={<Layout><TournamentDetail /></Layout>} />
           <Route path="/conventions" element={<Layout><Conventions /></Layout>} />
           <Route path="/conventions/:id" element={<Layout><ConventionDetail /></Layout>} />
+          <Route path="/retailers" element={<Layout><Retailers /></Layout>} />
           <Route path="/games" element={<Layout><Games /></Layout>} />
           <Route path="/blog" element={<Layout><Blog /></Layout>} />
           <Route path="/blog/:slug" element={<Layout><BlogPost /></Layout>} />
