@@ -57,7 +57,7 @@ const Index = () => {
             id: conventionData.id,
             title: conventionData.name,
             description: conventionData.description,
-            image_url: conventionData.image_url,
+            image_url: conventionData.carousel_image,
             type: 'convention'
           });
         }
@@ -67,7 +67,7 @@ const Index = () => {
             id: tournamentData.id,
             title: tournamentData.title,
             description: tournamentData.description,
-            image_url: tournamentData.image_url,
+            image_url: tournamentData.carousel_image,
             type: 'tournament'
           });
         }
@@ -77,7 +77,7 @@ const Index = () => {
             id: retailerData.id,
             title: retailerData.name,
             description: retailerData.description,
-            image_url: retailerData.store_photo,
+            image_url: retailerData.carousel_image,
             type: 'retailer'
           });
         }
