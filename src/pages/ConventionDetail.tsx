@@ -17,15 +17,22 @@ const ConventionDetail = () => {
   const { data: convention, isLoading } = useQuery({
     queryKey: ["convention", id],
     queryFn: async () => {
+      if (!id) throw new Error("No convention ID provided");
+      
       const { data, error } = await supabase
         .from("conventions")
-        .select("*")
+        .select()
         .eq("id", id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching convention:", error);
+        throw error;
+      }
+
       return data;
     },
+    enabled: !!id, // Only run query if we have an ID
   });
 
   if (isLoading) {
