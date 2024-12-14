@@ -295,6 +295,7 @@ export type Database = {
       }
       conventions: {
         Row: {
+          carousel_image: string | null
           created_at: string
           description: string | null
           end_date: string
@@ -312,6 +313,7 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          carousel_image?: string | null
           created_at?: string
           description?: string | null
           end_date: string
@@ -329,6 +331,7 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          carousel_image?: string | null
           created_at?: string
           description?: string | null
           end_date?: string
@@ -533,6 +536,7 @@ export type Database = {
       retailers: {
         Row: {
           address: string
+          carousel_image: string | null
           city: string
           created_at: string | null
           description: string | null
@@ -553,6 +557,7 @@ export type Database = {
         }
         Insert: {
           address: string
+          carousel_image?: string | null
           city: string
           created_at?: string | null
           description?: string | null
@@ -573,6 +578,7 @@ export type Database = {
         }
         Update: {
           address?: string
+          carousel_image?: string | null
           city?: string
           created_at?: string | null
           description?: string | null
@@ -719,6 +725,7 @@ export type Database = {
       }
       tournaments: {
         Row: {
+          carousel_image: string | null
           created_at: string | null
           current_participants: number | null
           description: string | null
@@ -740,6 +747,7 @@ export type Database = {
           venue: string
         }
         Insert: {
+          carousel_image?: string | null
           created_at?: string | null
           current_participants?: number | null
           description?: string | null
@@ -761,6 +769,7 @@ export type Database = {
           venue: string
         }
         Update: {
+          carousel_image?: string | null
           created_at?: string | null
           current_participants?: number | null
           description?: string | null
