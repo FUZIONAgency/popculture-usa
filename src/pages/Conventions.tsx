@@ -15,8 +15,29 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ConventionCalendar } from "@/components/ConventionCalendar";
+
+// Function to get cached conventions
+const getCachedConventions = () => {
+  const cached = localStorage.getItem('conventions');
+  if (cached) {
+    const { data, timestamp } = JSON.parse(cached);
+    // Check if cache is less than 5 minutes old
+    if (Date.now() - timestamp < 5 * 60 * 1000) {
+      return data;
+    }
+  }
+  return null;
+};
+
+// Function to set cached conventions
+const setCachedConventions = (data: any) => {
+  localStorage.setItem('conventions', JSON.stringify({
+    data,
+    timestamp: Date.now()
+  }));
+};
 
 const Conventions = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,14 +49,26 @@ const Conventions = () => {
   const { data: conventions, isLoading } = useQuery({
     queryKey: ["conventions"],
     queryFn: async () => {
+      // Try to get cached data first
+      const cachedData = getCachedConventions();
+      if (cachedData) {
+        return cachedData;
+      }
+
+      // If no cache or expired, fetch from API
       const { data, error } = await supabase
         .from("conventions")
         .select("*")
         .order("start_date", { ascending: true });
       
       if (error) throw error;
+      
+      // Cache the new data
+      setCachedConventions(data);
       return data;
     },
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    cacheTime: 10 * 60 * 1000, // Keep in memory for 10 minutes
   });
 
   const nextTwoConventions = conventions?.slice(0, 2) || [];
@@ -68,6 +101,13 @@ const Conventions = () => {
         sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc",
     });
   };
+
+  // Clear cache when component unmounts
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('conventions');
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
