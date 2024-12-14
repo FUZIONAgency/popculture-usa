@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { parse } from "date-fns";
 import { startOfWeek } from "date-fns";
 import { getDay } from "date-fns";
-import enUS from "date-fns/locale/en-US";
+import { enUS } from "date-fns/locale";  // Changed import to use named import
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useNavigate } from "react-router-dom";
 
