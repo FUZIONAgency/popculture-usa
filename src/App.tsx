@@ -9,6 +9,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import ConventionDetail from "./pages/ConventionDetail";
 import Conventions from "./pages/Conventions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -51,6 +53,8 @@ const App = () => (
           <Route path="/conventions" element={<Layout><Conventions /></Layout>} />
           <Route path="/conventions/:id" element={<Layout><ConventionDetail /></Layout>} />
           <Route path="/games" element={<Layout><Games /></Layout>} />
+          <Route path="/blog" element={<Layout><Blog /></Layout>} />
+          <Route path="/blog/:slug" element={<Layout><BlogPost /></Layout>} />
           <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
           <Route path="/terms-conditions" element={<Layout><TermsConditions /></Layout>} />
           <Route path="/contact" element={<Layout><Contact /></Layout>} />
