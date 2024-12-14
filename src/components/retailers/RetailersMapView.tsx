@@ -1,7 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { MapMarker } from './MapMarker';
 import { defaultIcon, nearbyIcon, userIcon } from '@/hooks/use-retailers-map';
-import type { MapContainerProps, TileLayerProps, MarkerProps } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 interface RetailersMapViewProps {
@@ -23,18 +22,17 @@ export const RetailersMapView = ({
   userLocation, 
   nearbyRetailerIds 
 }: RetailersMapViewProps) => {
+  // Increased height from 400px to 520px (30% increase)
   return (
     <MapContainer
       center={center}
       zoom={4}
       scrollWheelZoom={false}
       style={{ height: '520px', width: '100%' }}
-      {...({} as MapContainerProps)}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        {...({} as TileLayerProps)}
       />
       {retailers.map((retailer) => (
         <MapMarker
@@ -44,11 +42,7 @@ export const RetailersMapView = ({
         />
       ))}
       {userLocation && (
-        <Marker 
-          position={userLocation} 
-          icon={userIcon}
-          {...({} as MarkerProps)}
-        >
+        <Marker position={userLocation} icon={userIcon}>
           <Popup>Your Location</Popup>
         </Marker>
       )}
