@@ -138,7 +138,7 @@ const Conventions = () => {
           </div>
         </section>
 
-        {/* Calendar Section - Now Full Width */}
+        {/* Calendar Section */}
         <section className="mb-12 -mx-4 px-4 bg-white shadow-md py-8">
           <div className="container mx-auto">
             <h2 className="text-2xl font-bold mb-6">Convention Calendar</h2>
