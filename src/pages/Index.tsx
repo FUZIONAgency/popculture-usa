@@ -163,10 +163,12 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       {/* Featured Items Carousel Section */}
-      <section className="w-full h-[60vh] mb-12">
-        <Carousel className="w-full h-full">
-          <CarouselContent>
-            {featuredItems.map((item, index) => (
+
+{/* Featured Items Carousel Section */}
+<section className="w-full h-[60vh] mb-12">
+  <Carousel className="w-full h-full" autoRotate={true} autoRotateInterval={10000}>
+    <CarouselContent>
+      {featuredItems.map((item, index) => (
               <CarouselItem key={index} className="h-full">
                 <div 
                   className="relative w-full h-full bg-cover bg-center"
@@ -188,12 +190,12 @@ const Index = () => {
                   </div>
                 </div>
               </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="left-4" />
-          <CarouselNext className="right-4" />
-        </Carousel>
-      </section>
+      ))}
+    </CarouselContent>
+    <CarouselPrevious className="left-4" />
+    <CarouselNext className="right-4" />
+  </Carousel>
+</section>
 
       {/* Upcoming Conventions Section */}
       <section className="container mx-auto px-4 py-12">
