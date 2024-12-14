@@ -95,7 +95,7 @@ const Index = () => {
             id: tournamentData.id,
             title: tournamentData.title,
             description: tournamentData.description,
-            image_url: tournamentData.image_url || '/placeholder.svg',
+            image_url: tournamentData.image_url || 'https://kwpptrhywkyuzadwxgdl.supabase.co/storage/v1/object/public/Carousel/PopCultureUltramanBlue.avif?t=2024-12-14T04%3A05%3A59.997Z',
             type: 'tournament'
           });
         }
