@@ -5,38 +5,65 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import type { Player } from '@/types/player';
+import type { PlayerGameAccount, GameSystem } from '@/types/game';
 
 const MyAccount = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
   const [player, setPlayer] = useState<Player | null>(null);
+  const [gameAccounts, setGameAccounts] = useState<(PlayerGameAccount & { game_system: GameSystem })[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getProfileAndPlayer = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        // Get profile data
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        setProfile({
-          email: session.user.email,
-          ...profileData
-        });
-
-        // Check for player record
-        if (session.user.email) {
-          const { data: playerData } = await supabase
-            .from('players')
-            .select('*')
-            .eq('email', session.user.email)
+        try {
+          // Get profile data
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select()
+            .eq('id', session.user.id)
             .single();
           
-          setPlayer(playerData);
+          if (profileError) throw profileError;
+          
+          setProfile({
+            email: session.user.email,
+            ...profileData
+          });
+
+          // Check for player record
+          if (session.user.email) {
+            const { data: playerData, error: playerError } = await supabase
+              .from('players')
+              .select()
+              .eq('email', session.user.email)
+              .single();
+            
+            if (playerError) throw playerError;
+            setPlayer(playerData);
+
+            // Get player game accounts with game system info
+            if (playerData) {
+              const { data: gameAccountsData, error: gameAccountsError } = await supabase
+                .from('player_game_accounts')
+                .select(`
+                  *,
+                  game_system:game_systems(*)
+                `)
+                .eq('player_id', playerData.id);
+
+              if (gameAccountsError) throw gameAccountsError;
+
+              setGameAccounts(gameAccountsData.map(account => ({
+                ...account,
+                game_system: account.game_system[0]
+              })));
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
         }
       }
       setLoading(false);
@@ -113,6 +140,40 @@ const MyAccount = () => {
                 </Button>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Game Systems */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Game Systems</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {player ? (
+              <div className="space-y-4">
+                {gameAccounts.length > 0 ? (
+                  gameAccounts.map((account) => (
+                    <div key={account.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <h3 className="font-medium">{account.game_system.name}</h3>
+                        <p className="text-sm text-gray-600">Account ID: {account.account_id}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-600 mb-4">No game accounts linked</p>
+                )}
+                <div className="flex justify-end">
+                  <Button 
+                    className="w-32 h-32"
+                    variant="outline"
+                    onClick={() => navigate('/add-game-account')}
+                  >
+                    Add Game
+                  </Button>
+                </div>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       </div>

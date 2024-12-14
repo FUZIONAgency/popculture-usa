@@ -22,10 +22,9 @@ export const RetailersMapView = ({
   userLocation, 
   nearbyRetailerIds 
 }: RetailersMapViewProps) => {
-  // Increased height from 400px to 520px (30% increase)
   return (
     <MapContainer
-      center={center}
+      center={center as any}
       zoom={4}
       scrollWheelZoom={false}
       style={{ height: '520px', width: '100%' }}
@@ -33,6 +32,7 @@ export const RetailersMapView = ({
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        {...{} as any}
       />
       {retailers.map((retailer) => (
         <MapMarker
@@ -42,7 +42,7 @@ export const RetailersMapView = ({
         />
       ))}
       {userLocation && (
-        <Marker position={userLocation} icon={userIcon}>
+        <Marker position={userLocation} icon={userIcon as any}>
           <Popup>Your Location</Popup>
         </Marker>
       )}
