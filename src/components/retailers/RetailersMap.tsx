@@ -15,6 +15,34 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
+// Create custom icons for different states
+const defaultIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const nearbyIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const userIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
 interface Retailer {
   id: string;
   name: string;
@@ -31,8 +59,8 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
   const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [searchRadius, setSearchRadius] = useState<string>("10");
+  const [nearbyRetailerIds, setNearbyRetailerIds] = useState<Set<string>>(new Set());
   
-  // Calculate center point (average of all retailer locations or user location)
   const center = userLocation || (retailers.length > 0
     ? [
         retailers.reduce((sum, r) => sum + r.lat, 0) / retailers.length,
@@ -54,6 +82,8 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
             return distance <= Number(searchRadius);
           });
 
+          // Update the set of nearby retailer IDs
+          setNearbyRetailerIds(new Set(nearbyRetailers.map(r => r.id)));
           toast.success(`Found ${nearbyRetailers.length} retailers within ${searchRadius} miles`);
         },
         (error) => {
@@ -99,19 +129,20 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
       </div>
       
       <MapContainer
-        center={center}
+        defaultCenter={center}
         zoom={4}
         scrollWheelZoom={false}
         style={{ height: '400px', width: '100%' }}
       >
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {retailers.map((retailer) => (
           <Marker
             key={retailer.id}
-            position={[retailer.lat, retailer.lng] as [number, number]}
+            position={[retailer.lat, retailer.lng]}
+            icon={nearbyRetailerIds.has(retailer.id) ? nearbyIcon : defaultIcon}
           >
             <Popup>
               <div className="space-y-2">
@@ -130,14 +161,7 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
         {userLocation && (
           <Marker
             position={userLocation}
-            icon={new L.Icon({
-              iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-              shadowSize: [41, 41]
-            })}
+            icon={userIcon}
           >
             <Popup>Your Location</Popup>
           </Marker>
