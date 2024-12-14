@@ -38,7 +38,7 @@ export const FeaturedCarousel = ({ items }: FeaturedCarouselProps) => {
   };
 
   return (
-    <section className="w-full h-[500px] relative mb-8">
+    <section className="w-full h-[50vh] relative mb-8">
       <Carousel className="w-full h-full" autoRotate={true} autoRotateInterval={10000}>
         <CarouselContent>
           {items.map((item, index) => (
