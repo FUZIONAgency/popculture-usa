@@ -46,11 +46,13 @@ const ConventionDetail = () => {
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
-            <img
-              src={convention.image_url}
-              alt={convention.name}
-              className="w-full h-64 object-cover rounded-lg"
-            />
+            <div className="w-full flex justify-center">
+              <img
+                src={convention.image_url}
+                alt={convention.name}
+                className="w-1/3 h-auto object-contain rounded-lg"
+              />
+            </div>
             
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-gray-600">
