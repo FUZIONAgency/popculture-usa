@@ -7,13 +7,18 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ConventionDetail from "./pages/ConventionDetail";
+import Conventions from "./pages/Conventions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import Contact from "./pages/Contact";
+import MediaKit from "./pages/MediaKit";
+import Metrics from "./pages/Metrics";
 
 const queryClient = new QueryClient();
 
 // Placeholder components for new routes
 const Tournaments = () => <div>Tournaments Page (Coming Soon)</div>;
 const Retailers = () => <div>Retailers Page (Coming Soon)</div>;
-const Conventions = () => <div>Conventions Page (Coming Soon)</div>;
 const Games = () => <div>Games Page (Coming Soon)</div>;
 
 const App = () => (
@@ -30,6 +35,11 @@ const App = () => (
           <Route path="/conventions" element={<Conventions />} />
           <Route path="/conventions/:id" element={<ConventionDetail />} />
           <Route path="/games" element={<Games />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-conditions" element={<TermsConditions />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/media-kit" element={<MediaKit />} />
+          <Route path="/metrics" element={<Metrics />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
