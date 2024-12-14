@@ -44,17 +44,20 @@ const Navbar = () => {
 
   const NavLinks = () => (
     <>
-      <Link to="/tournaments" className="text-white hover:text-primary transition-colors">
+      <Link to="/tournaments" className="text-white hover:text-red-500 transition-colors">
         Tournaments
       </Link>
-      <Link to="/retailers" className="text-white hover:text-primary transition-colors">
+      <Link to="/retailers" className="text-white hover:text-red-500 transition-colors">
         Retailers
       </Link>
-      <Link to="/conventions" className="text-white hover:text-primary transition-colors">
+      <Link to="/conventions" className="text-white hover:text-red-500 transition-colors">
         Conventions
       </Link>
-      <Link to="/games" className="text-white hover:text-primary transition-colors">
+      <Link to="/games" className="text-white hover:text-red-500 transition-colors">
         Games
+      </Link>
+      <Link to="/blog" className="text-white hover:text-red-500 transition-colors">
+        Blog
       </Link>
     </>
   );
