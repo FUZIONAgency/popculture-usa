@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 import {
   Carousel,
   CarouselContent,
@@ -25,6 +26,7 @@ const Index = () => {
   const [conventions, setConventions] = useState<Convention[]>([]);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchConventions = async () => {
@@ -87,7 +89,8 @@ const Index = () => {
           {conventions.map((convention) => (
             <div 
               key={convention.id}
-              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
+              onClick={() => navigate(`/conventions/${convention.id}`)}
             >
               <div 
                 className="h-48 bg-cover bg-center"

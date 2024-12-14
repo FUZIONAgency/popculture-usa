@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ConventionDetail from "./pages/ConventionDetail";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/tournaments" element={<Tournaments />} />
           <Route path="/retailers" element={<Retailers />} />
           <Route path="/conventions" element={<Conventions />} />
+          <Route path="/conventions/:id" element={<ConventionDetail />} />
           <Route path="/games" element={<Games />} />
         </Routes>
       </BrowserRouter>
