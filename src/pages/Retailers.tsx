@@ -73,11 +73,12 @@ export default function Retailers() {
         <MapContainer
           center={[39.8283, -98.5795]} // Center of USA
           zoom={4}
+          scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
         >
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           {filteredRetailers.map((retailer) => (
             <Marker
