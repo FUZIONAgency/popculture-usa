@@ -70,11 +70,7 @@ const Index = () => {
                   className="w-full h-full bg-cover bg-center"
                   style={{ backgroundImage: `url(${image})` }}
                 >
-                  <div className="w-full h-full bg-black/40 flex items-center justify-center">
-                    <h2 className="text-4xl md:text-6xl text-white font-bold">
-                      Welcome to Pop Culture USA
-                    </h2>
-                  </div>
+                  <div className="w-full h-full bg-black/40 flex items-center justify-center" />
                 </div>
               </CarouselItem>
             ))}

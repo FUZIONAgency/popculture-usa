@@ -1,7 +1,41 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
+
   return (
     <nav className="bg-black w-full py-4 px-6">
       <div className="container mx-auto flex items-center justify-between">
@@ -26,14 +60,40 @@ const Navbar = () => {
             </Link>
           </div>
         </div>
-        <Link to="/auth">
-          <Button 
-            variant="destructive"
-            className="bg-red-600 hover:bg-red-700"
-          >
-            Sign In
-          </Button>
-        </Link>
+        {!loading && (
+          user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="outline"
+                  className="bg-green-600 hover:bg-green-700 text-white border-none"
+                >
+                  Profile
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium">{user.email}</span>
+                    <span className="text-sm text-gray-500">User ID: {user.id}</span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut}>
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link to="/auth">
+              <Button 
+                variant="destructive"
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Sign In
+              </Button>
+            </Link>
+          )
+        )}
       </div>
     </nav>
   );
