@@ -24,7 +24,9 @@ export const GameAccountsCard = ({ player, gameAccounts }: GameAccountsCardProps
               gameAccounts.map((account) => (
                 <div key={account.id} className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
-                    <h3 className="font-medium">Game System: {account.game_system.name}</h3>
+                    <h3 className="font-medium">
+                      Game System: {account.game_system?.name || 'Unknown'}
+                    </h3>
                     <p className="text-sm text-gray-600">Game System ID: {account.game_system_id}</p>
                     <p className="text-sm text-gray-600">Account ID: {account.account_id}</p>
                     <p className="text-sm text-gray-600">Status: {account.status}</p>
