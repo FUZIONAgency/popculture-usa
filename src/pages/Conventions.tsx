@@ -76,7 +76,7 @@ const Conventions = () => {
             <Button 
               variant="outline" 
               asChild
-              className="text-white border-white hover:bg-white hover:text-black"
+              className="text-black border-white hover:bg-white hover:text-black"
             >
               <Link to={`/conventions/${featuredConvention.id}`}>Learn More</Link>
             </Button>
