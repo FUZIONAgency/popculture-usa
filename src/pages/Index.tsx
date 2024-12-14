@@ -60,7 +60,7 @@ const Index = () => {
         // Fetch featured convention
         const { data: conventionData } = await supabase
           .from('conventions')
-          .select('id, name as title, description, image_url')
+          .select('id, name, description, image_url')
           .eq('is_featured', true)
           .single();
 
@@ -74,7 +74,7 @@ const Index = () => {
         // Fetch featured retailer
         const { data: retailerData } = await supabase
           .from('retailers')
-          .select('id, name as title, description, store_photo as image_url')
+          .select('id, name, description, store_photo')
           .eq('is_featured', true)
           .single();
 
@@ -83,7 +83,7 @@ const Index = () => {
         if (conventionData) {
           items.push({
             id: conventionData.id,
-            title: conventionData.title,
+            title: conventionData.name, // Changed from title to name
             description: conventionData.description,
             image_url: conventionData.image_url,
             type: 'convention'
@@ -103,9 +103,9 @@ const Index = () => {
         if (retailerData) {
           items.push({
             id: retailerData.id,
-            title: retailerData.title,
+            title: retailerData.name, // Changed from title to name
             description: retailerData.description,
-            image_url: retailerData.image_url || '/placeholder.svg',
+            image_url: retailerData.store_photo || '/placeholder.svg', // Changed from image_url to store_photo
             type: 'retailer'
           });
         }
