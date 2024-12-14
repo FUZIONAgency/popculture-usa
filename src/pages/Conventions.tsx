@@ -7,7 +7,7 @@ import { ConventionsTable } from "@/components/conventions/ConventionsTable";
 import { HostSection } from "@/components/conventions/HostSection";
 import { Tables } from "@/integrations/supabase/types";
 
-type Convention = Tables<"conventions">;
+type Convention = Tables<"conventions">["Row"];
 
 // Function to get cached conventions
 const getCachedConventions = () => {
@@ -33,9 +33,9 @@ const setCachedConventions = (data: Convention[]) => {
 const Conventions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{
-    key: keyof Tables<"conventions">["Row"] | null;
+    key: keyof Convention;
     direction: "asc" | "desc";
-  }>({ key: null, direction: "asc" });
+  }>({ key: "start_date", direction: "asc" });
 
   const { data: conventions, isLoading } = useQuery({
     queryKey: ["conventions"],
@@ -85,7 +85,7 @@ const Conventions = () => {
         })
     : [];
 
-  const handleSort = (key: keyof Tables<"conventions">["Row"]) => {
+  const handleSort = (key: keyof Convention) => {
     setSortConfig({
       key,
       direction:

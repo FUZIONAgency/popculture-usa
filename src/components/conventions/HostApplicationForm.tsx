@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const formSchema = z.object({
@@ -22,20 +22,28 @@ const formSchema = z.object({
   message: z.string().min(10, "Please provide more details about your venue and hosting interest"),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 export const HostApplicationForm = ({ onClose }: { onClose: () => void }) => {
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       subject: "Tournament Host Application",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: FormValues) => {
     try {
       const { error } = await supabase
         .from("contact_messages")
-        .insert([values]);
+        .insert({
+          name: values.name,
+          email: values.email,
+          subject: values.subject,
+          message: values.message,
+          status: "new"
+        });
 
       if (error) throw error;
 
@@ -46,6 +54,7 @@ export const HostApplicationForm = ({ onClose }: { onClose: () => void }) => {
       
       onClose();
     } catch (error) {
+      console.error("Error submitting form:", error);
       toast({
         variant: "destructive",
         title: "Error",
