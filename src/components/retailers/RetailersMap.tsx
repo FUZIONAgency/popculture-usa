@@ -28,19 +28,19 @@ export default function RetailersMap({ retailers }: RetailersMapProps) {
   return (
     <div className="h-[600px] w-full rounded-lg overflow-hidden shadow-lg">
       <MapContainer
-        center={centerPosition}
+        center={centerPosition as L.LatLngExpression}
         zoom={4}
         scrollWheelZoom={false}
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {retailers.map((retailer) => (
           <Marker
             key={retailer.id}
-            position={[retailer.lat, retailer.lng]}
+            position={[retailer.lat, retailer.lng] as L.LatLngExpression}
             eventHandlers={{
               click: () => handleRetailerClick(retailer.id),
             }}
