@@ -41,6 +41,32 @@ export default {
           foreground: "#666666",
         },
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: 'none',
+            color: 'inherit',
+            a: {
+              color: '#9b87f5',
+              '&:hover': {
+                color: '#7E69AB',
+              },
+            },
+            h1: {
+              color: '#111827',
+            },
+            h2: {
+              color: '#111827',
+            },
+            h3: {
+              color: '#111827',
+            },
+            h4: {
+              color: '#111827',
+            },
+          },
+        },
+      },
       keyframes: {
         "fade-up": {
           "0%": {
@@ -67,5 +93,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;
