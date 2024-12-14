@@ -13,14 +13,15 @@ const AuthPage = () => {
       if (session) {
         try {
           // Check if profile exists
-          const { data: existingProfile, error: profileError } = await supabase
+          const { data: profiles, error: profileError } = await supabase
             .from('profiles')
             .select('*')
-            .eq('id', session.user.id)
-            .single();
+            .eq('id', session.user.id);
 
-          if (profileError && profileError.code === 'PGRST116') {
-            // Profile doesn't exist, create it
+          if (profileError) throw profileError;
+
+          // If no profile exists, create one
+          if (!profiles || profiles.length === 0) {
             const { error: createError } = await supabase
               .from('profiles')
               .insert([
@@ -32,8 +33,6 @@ const AuthPage = () => {
               ]);
 
             if (createError) throw createError;
-          } else if (profileError) {
-            throw profileError;
           }
 
           // Success message and navigation

@@ -12,8 +12,8 @@ interface MapMarkerProps {
 export const MapMarker = ({ retailer, icon }: MapMarkerProps) => {
   return (
     <Marker 
-      position={[retailer.lat, retailer.lng]} 
-      icon={icon as any}
+      position={[retailer.lat as number, retailer.lng as number]} 
+      icon={icon}
     >
       <Popup>
         <div className="text-sm">
