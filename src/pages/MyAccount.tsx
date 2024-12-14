@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import type { Player } from '@/types/player';
 import type { PlayerGameAccount, GameSystem } from '@/types/game';
+import { ProfileCard } from '@/components/account/ProfileCard';
+import { PlayerCard } from '@/components/account/PlayerCard';
+import { GameAccountsCard } from '@/components/account/GameAccountsCard';
 
 const MyAccount = () => {
   const navigate = useNavigate();
@@ -110,96 +111,9 @@ const MyAccount = () => {
       <h1 className="text-3xl font-bold mb-6">My Account</h1>
       
       <div className="space-y-6">
-        {/* Profile Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <label className="font-medium">Email</label>
-                <p className="text-gray-600">{profile?.email}</p>
-              </div>
-              <div>
-                <label className="font-medium">Username</label>
-                <p className="text-gray-600">{profile?.username || 'Not set'}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Player Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Player Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {player ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="font-medium">Alias</label>
-                  <p className="text-gray-600">{player.alias}</p>
-                </div>
-                {player.city && (
-                  <div>
-                    <label className="font-medium">City</label>
-                    <p className="text-gray-600">{player.city}</p>
-                  </div>
-                )}
-                {player.state && (
-                  <div>
-                    <label className="font-medium">State</label>
-                    <p className="text-gray-600">{player.state}</p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-4">
-                <p className="text-gray-600 mb-4">No player account found</p>
-                <Button 
-                  variant="destructive"
-                  onClick={() => navigate('/create-player')}
-                >
-                  Create a Player Account
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Game Systems */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Game Systems</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {player ? (
-              <div className="space-y-4">
-                {gameAccounts.length > 0 ? (
-                  gameAccounts.map((account) => (
-                    <div key={account.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h3 className="font-medium">{account.game_system.name}</h3>
-                        <p className="text-sm text-gray-600">Account ID: {account.account_id}</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-600 mb-4">No game accounts linked</p>
-                )}
-                <div className="flex justify-end">
-                  <Button 
-                    variant="outline"
-                    onClick={() => navigate('/add-game-account')}
-                  >
-                    Add Game
-                  </Button>
-                </div>
-              </div>
-            ) : null}
-          </CardContent>
-        </Card>
+        <ProfileCard profile={profile} />
+        <PlayerCard player={player} />
+        <GameAccountsCard player={player} gameAccounts={gameAccounts} />
       </div>
     </div>
   );
