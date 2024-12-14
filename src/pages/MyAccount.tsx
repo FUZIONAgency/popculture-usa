@@ -24,21 +24,34 @@ const MyAccount = () => {
           return;
         }
 
-        // Get profile data
-        const { data: profileData, error: profileError } = await supabase
+        // First create profile if it doesn't exist
+        const { data: existingProfile, error: checkError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
           .single();
 
-        if (profileError && profileError.code !== 'PGRST116') {
-          throw profileError;
-        }
+        if (checkError && checkError.code === 'PGRST116') {
+          // Profile doesn't exist, create it
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert([
+              { 
+                id: session.user.id,
+                email: session.user.email,
+                username: session.user.email?.split('@')[0] // Default username from email
+              }
+            ])
+            .select()
+            .single();
 
-        setProfile({
-          email: session.user.email,
-          ...profileData
-        });
+          if (createError) throw createError;
+          setProfile(newProfile);
+        } else if (checkError) {
+          throw checkError;
+        } else {
+          setProfile(existingProfile);
+        }
 
         // Get player data if it exists
         if (session.user.email) {
@@ -177,7 +190,6 @@ const MyAccount = () => {
                 )}
                 <div className="flex justify-end">
                   <Button 
-                    className="w-32 h-32"
                     variant="outline"
                     onClick={() => navigate('/add-game-account')}
                   >
