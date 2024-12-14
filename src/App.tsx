@@ -9,6 +9,12 @@ import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
 
+// Placeholder components for new routes
+const Tournaments = () => <div>Tournaments Page (Coming Soon)</div>;
+const Retailers = () => <div>Retailers Page (Coming Soon)</div>;
+const Conventions = () => <div>Conventions Page (Coming Soon)</div>;
+const Games = () => <div>Games Page (Coming Soon)</div>;
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -17,14 +23,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
-          <Route 
-            path="/" 
-            element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } 
-          />
+          <Route path="/" element={<Index />} />
+          <Route path="/tournaments" element={<Tournaments />} />
+          <Route path="/retailers" element={<Retailers />} />
+          <Route path="/conventions" element={<Conventions />} />
+          <Route path="/games" element={<Games />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
