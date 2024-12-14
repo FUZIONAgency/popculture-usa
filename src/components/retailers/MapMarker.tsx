@@ -18,7 +18,10 @@ export const MapMarker = ({ retailer, icon }: MapMarkerProps) => {
   const navigate = useNavigate();
 
   return (
-    <Marker position={[retailer.lat, retailer.lng]} icon={icon}>
+    <Marker 
+      position={[retailer.lat, retailer.lng]} 
+      icon={icon}
+    >
       <Popup>
         <div className="space-y-2">
           <h3 className="font-bold">{retailer.name}</h3>
