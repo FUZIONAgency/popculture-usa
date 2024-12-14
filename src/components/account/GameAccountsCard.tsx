@@ -26,6 +26,7 @@ export const GameAccountsCard = ({ player, gameAccounts }: GameAccountsCardProps
                   <div>
                     <h3 className="font-medium">{account.game_system.name}</h3>
                     <p className="text-sm text-gray-600">Account ID: {account.account_id}</p>
+                    <p className="text-sm text-gray-600">Status: {account.status}</p>
                   </div>
                 </div>
               ))
