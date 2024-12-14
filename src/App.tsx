@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ConventionDetail from "./pages/ConventionDetail";
@@ -22,6 +24,16 @@ const queryClient = new QueryClient();
 const Retailers = () => <div>Retailers Page (Coming Soon)</div>;
 const Games = () => <div>Games Page (Coming Soon)</div>;
 
+const Layout = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen flex flex-col">
+    <Navbar />
+    <main className="flex-grow">
+      {children}
+    </main>
+    <Footer />
+  </div>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -29,19 +41,23 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route element={<Layout>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/tournaments" element={<Tournaments />} />
+              <Route path="/tournaments/:id" element={<TournamentDetail />} />
+              <Route path="/retailers" element={<Retailers />} />
+              <Route path="/conventions" element={<Conventions />} />
+              <Route path="/conventions/:id" element={<ConventionDetail />} />
+              <Route path="/games" element={<Games />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-conditions" element={<TermsConditions />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/media-kit" element={<MediaKit />} />
+              <Route path="/metrics" element={<Metrics />} />
+            </Routes>
+          </Layout>} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/" element={<Index />} />
-          <Route path="/tournaments" element={<Tournaments />} />
-          <Route path="/tournaments/:id" element={<TournamentDetail />} />
-          <Route path="/retailers" element={<Retailers />} />
-          <Route path="/conventions" element={<Conventions />} />
-          <Route path="/conventions/:id" element={<ConventionDetail />} />
-          <Route path="/games" element={<Games />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-conditions" element={<TermsConditions />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/media-kit" element={<MediaKit />} />
-          <Route path="/metrics" element={<Metrics />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
