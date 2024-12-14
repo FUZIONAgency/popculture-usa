@@ -5,6 +5,9 @@ import { ConventionCalendar } from "@/components/ConventionCalendar";
 import { UpcomingConventions } from "@/components/conventions/UpcomingConventions";
 import { ConventionsTable } from "@/components/conventions/ConventionsTable";
 import { HostSection } from "@/components/conventions/HostSection";
+import { Tables } from "@/integrations/supabase/types";
+
+type Convention = Tables<"conventions">;
 
 // Function to get cached conventions
 const getCachedConventions = () => {
@@ -20,7 +23,7 @@ const getCachedConventions = () => {
 };
 
 // Function to set cached conventions
-const setCachedConventions = (data: any) => {
+const setCachedConventions = (data: Convention[]) => {
   localStorage.setItem('conventions', JSON.stringify({
     data,
     timestamp: Date.now()
@@ -30,7 +33,7 @@ const setCachedConventions = (data: any) => {
 const Conventions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{
-    key: keyof typeof conventions[0] | null;
+    key: keyof Convention | null;
     direction: "asc" | "desc";
   }>({ key: null, direction: "asc" });
 
@@ -46,7 +49,7 @@ const Conventions = () => {
       // If no cache or expired, fetch from API
       const { data, error } = await supabase
         .from("conventions")
-        .select("*")
+        .select()
         .order("start_date", { ascending: true });
       
       if (error) throw error;
@@ -82,7 +85,7 @@ const Conventions = () => {
         })
     : [];
 
-  const handleSort = (key: keyof typeof conventions[0]) => {
+  const handleSort = (key: keyof Convention) => {
     setSortConfig({
       key,
       direction:
