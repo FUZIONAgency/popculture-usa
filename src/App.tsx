@@ -41,6 +41,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/auth" element={<Auth />} />
           <Route element={<Layout>
             <Routes>
               <Route path="/" element={<Index />} />
@@ -57,7 +58,6 @@ const App = () => (
               <Route path="/metrics" element={<Metrics />} />
             </Routes>
           </Layout>} />
-          <Route path="/auth" element={<Auth />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
