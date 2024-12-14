@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { RetailersMap } from "@/components/retailers/RetailersMap";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +12,8 @@ import {
 } from "@/components/ui/carousel";
 
 const Retailers = () => {
+  const navigate = useNavigate();
+
   const { data: featuredRetailer } = useQuery({
     queryKey: ['featuredRetailer'],
     queryFn: async () => {
@@ -61,7 +64,10 @@ const Retailers = () => {
           <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
               <CarouselItem>
-                <div className="relative h-[400px]">
+                <div 
+                  className="relative h-[400px] cursor-pointer"
+                  onClick={() => navigate(`/retailers/${featuredRetailer.id}`)}
+                >
                   <img
                     src={featuredRetailer.carousel_image}
                     alt={featuredRetailer.name}
@@ -88,7 +94,11 @@ const Retailers = () => {
           <h2 className="text-2xl font-bold mb-4">Recent Retailers</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {recentRetailers.map((retailer) => (
-              <Card key={retailer.id}>
+              <Card 
+                key={retailer.id}
+                className="cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => navigate(`/retailers/${retailer.id}`)}
+              >
                 <CardHeader>
                   <CardTitle>{retailer.name}</CardTitle>
                 </CardHeader>
