@@ -66,7 +66,7 @@ export const FeaturedCarousel = ({ items }: FeaturedCarouselProps) => {
                   <Button 
                     variant="outline" 
                     onClick={() => handleFeaturedClick(item)}
-                    className="text-white border-white hover:bg-white hover:text-black"
+                    className="text-black border-white hover:bg-white hover:text-black"
                   >
                     Learn More
                   </Button>
