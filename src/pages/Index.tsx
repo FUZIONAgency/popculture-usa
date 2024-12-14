@@ -85,7 +85,7 @@ const Index = () => {
             id: conventionData.id,
             title: conventionData.name, // Changed from title to name
             description: conventionData.description,
-            image_url: conventionData.image_url,
+            image_url: conventionData.image_url || 'https://kwpptrhywkyuzadwxgdl.supabase.co/storage/v1/object/public/Carousel/PopCultureUltramanRed.avif?t=2024-12-14T12%3A02%3A23.037Z',
             type: 'convention'
           });
         }
@@ -105,7 +105,7 @@ const Index = () => {
             id: retailerData.id,
             title: retailerData.name, // Changed from title to name
             description: retailerData.description,
-            image_url: retailerData.store_photo || '/placeholder.svg', // Changed from image_url to store_photo
+            image_url: retailerData.store_photo || 'https://kwpptrhywkyuzadwxgdl.supabase.co/storage/v1/object/public/Carousel/PopCultureUltramanDouble.avif?t=2024-12-14T12%3A03%3A00.669Z', // Changed from image_url to store_photo
             type: 'retailer'
           });
         }
