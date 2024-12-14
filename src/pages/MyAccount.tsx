@@ -15,7 +15,7 @@ const MyAccount = () => {
   const [gameAccounts, setGameAccounts] = useState<(PlayerGameAccount & { game_system: GameSystem })[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+useEffect(() => {
     const getProfileAndPlayer = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -69,7 +69,7 @@ const MyAccount = () => {
           if (playerData) {
             setPlayer(playerData);
 
-            // Get player game accounts
+            // Get player game accounts with game system information
             const { data: gameAccountsData, error: gameAccountsError } = await supabase
               .from('player_game_accounts')
               .select(`
