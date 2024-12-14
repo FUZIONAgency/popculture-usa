@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -47,7 +47,7 @@ export const AddGameAccountForm = ({ player }: AddGameAccountFormProps) => {
     },
   });
 
-  useState(() => {
+  useEffect(() => {
     const fetchGameSystems = async () => {
       const { data, error } = await supabase
         .from('game_systems')
