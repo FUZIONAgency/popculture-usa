@@ -11,7 +11,6 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import Navbar from "@/components/Navbar";
 
 interface Convention {
   id: string;
@@ -61,7 +60,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
       {/* Hero Carousel Section */}
       <section className="w-full h-[60vh] mb-12">
         <Carousel className="w-full h-full">
