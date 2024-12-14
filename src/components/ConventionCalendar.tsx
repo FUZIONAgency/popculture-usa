@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { parse } from "date-fns";
 import { startOfWeek } from "date-fns";
 import { getDay } from "date-fns";
-import { enUS } from "date-fns/locale";  // Changed import to use named import
+import { enUS } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useNavigate } from "react-router-dom";
 
@@ -36,13 +36,15 @@ interface Convention {
   start_date: string;
   end_date: string;
   description?: string;
+  type?: 'tournament' | 'convention';  // Added type field to distinguish between tournaments and conventions
 }
 
 interface ConventionCalendarProps {
   conventions: Convention[];
+  type?: 'tournament' | 'convention';  // Added type prop to determine navigation behavior
 }
 
-export const ConventionCalendar = ({ conventions }: ConventionCalendarProps) => {
+export const ConventionCalendar = ({ conventions, type = 'convention' }: ConventionCalendarProps) => {
   const navigate = useNavigate();
   const [view, setView] = useState<View>("month");
 
@@ -53,6 +55,7 @@ export const ConventionCalendar = ({ conventions }: ConventionCalendarProps) => 
     end: new Date(conv.end_date),
     desc: conv.description,
     color: conventionColors[index % conventionColors.length],
+    type: conv.type || type,  // Use the item type if provided, otherwise fall back to prop type
   })) || [];
 
   const eventStyleGetter = (event: any) => {
@@ -69,7 +72,9 @@ export const ConventionCalendar = ({ conventions }: ConventionCalendarProps) => 
   };
 
   const handleSelectEvent = (event: any) => {
-    navigate(`/conventions/${event.id}`);
+    const eventType = event.type || type;
+    const route = eventType === 'tournament' ? 'tournaments' : 'conventions';
+    navigate(`/${route}/${event.id}`);
   };
 
   return (

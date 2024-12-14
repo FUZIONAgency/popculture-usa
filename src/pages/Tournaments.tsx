@@ -117,12 +117,14 @@ export default function Tournaments() {
       <div className="space-y-2">
         <h2 className="text-2xl font-bold">Tournament Schedule</h2>
         <ConventionCalendar
+          type="tournament"
           conventions={tournaments?.map((t) => ({
             id: t.id,
             name: t.title,
             start_date: t.start_date,
             end_date: t.end_date,
             description: t.description,
+            type: 'tournament'
           })) || []}
         />
       </div>
