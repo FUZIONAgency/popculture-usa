@@ -9,13 +9,44 @@ const AuthPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
-        // User successfully logged in
-        toast.success("Welcome back!", {
-          description: "You've been successfully logged in."
-        });
-        navigate("/");
+        try {
+          // Check if profile exists
+          const { data: existingProfile, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profileError && profileError.code === 'PGRST116') {
+            // Profile doesn't exist, create it
+            const { error: createError } = await supabase
+              .from('profiles')
+              .insert([
+                { 
+                  id: session.user.id,
+                  email: session.user.email,
+                  username: session.user.email?.split('@')[0] // Default username from email
+                }
+              ]);
+
+            if (createError) throw createError;
+          } else if (profileError) {
+            throw profileError;
+          }
+
+          // Success message and navigation
+          toast.success("Welcome back!", {
+            description: "You've been successfully logged in."
+          });
+          navigate("/");
+        } catch (error: any) {
+          console.error('Error handling auth:', error);
+          toast.error("Authentication Error", {
+            description: error.message
+          });
+        }
       }
     });
 
