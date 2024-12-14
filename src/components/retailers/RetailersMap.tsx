@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { Button } from '@/components/ui/button';
 
 // Fix for default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -49,23 +50,17 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
         <Marker
           key={retailer.id}
           position={[retailer.lat, retailer.lng] as [number, number]}
-          eventHandlers={{
-            click: () => navigate(`/retailers/${retailer.id}`),
-          }}
         >
           <Popup>
-            <div>
+            <div className="space-y-2">
               <h3 className="font-bold">{retailer.name}</h3>
               <p>{retailer.address}</p>
-              <button
-                className="text-blue-600 hover:underline mt-2"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/retailers/${retailer.id}`);
-                }}
+              <Button 
+                onClick={() => navigate(`/retailers/${retailer.id}`)}
+                className="w-full"
               >
-                View Details
-              </button>
+                Visit Now
+              </Button>
             </div>
           </Popup>
         </Marker>
