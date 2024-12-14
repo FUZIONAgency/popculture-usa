@@ -1,10 +1,19 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
 import type { MapContainerProps } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
 import { supabase } from "@/integrations/supabase/client";
 import "leaflet/dist/leaflet.css";
+
+// Fix for default marker icons in React-Leaflet
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 interface Retailer {
   id: string;
@@ -101,14 +110,16 @@ export default function RetailerDetail() {
 
             <div className="mt-8 h-[400px] rounded-lg overflow-hidden">
               <MapContainer
-                center={position}
+                {...({center: position} as any)}
                 zoom={15}
                 scrollWheelZoom={false}
                 style={{ height: "100%", width: "100%" }}
               >
                 <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  {...({
+                    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  } as any)}
                 />
                 <Marker position={position}>
                   <Popup>

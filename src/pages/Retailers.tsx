@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
+import L from "leaflet";
 import type { MapContainerProps } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import "leaflet/dist/leaflet.css";
-import L from "leaflet";
 
 // Fix for default marker icons in React-Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -75,14 +75,16 @@ export default function Retailers() {
 
       <div className="h-[600px] w-full rounded-lg overflow-hidden shadow-lg">
         <MapContainer
-          center={centerPosition}
+          {...({center: centerPosition} as any)}
           zoom={4}
           scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
         >
           <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            {...({
+              url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            } as any)}
           />
           {filteredRetailers.map((retailer) => (
             <Marker
