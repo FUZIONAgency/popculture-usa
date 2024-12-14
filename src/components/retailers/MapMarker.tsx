@@ -2,7 +2,6 @@ import { Marker, Popup } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Icon } from 'leaflet';
-import { MarkerProps } from 'react-leaflet/lib/Marker';
 
 interface MapMarkerProps {
   retailer: {
@@ -19,11 +18,7 @@ export const MapMarker = ({ retailer, icon }: MapMarkerProps) => {
   const navigate = useNavigate();
 
   return (
-    <Marker
-      position={[retailer.lat, retailer.lng]}
-      icon={icon}
-      // @ts-ignore - icon prop is valid but types are incorrect
-    >
+    <Marker position={[retailer.lat, retailer.lng]} icon={icon}>
       <Popup>
         <div className="space-y-2">
           <h3 className="font-bold">{retailer.name}</h3>

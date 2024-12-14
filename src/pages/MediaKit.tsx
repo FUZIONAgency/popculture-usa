@@ -1,6 +1,8 @@
+import { Button } from "@/components/ui/button";
+
 const MediaKit = () => {
   return (
-    <main className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Media Kit</h1>
       
       <section className="mb-12">
@@ -55,7 +57,7 @@ const MediaKit = () => {
           press@popcultureusa.com
         </p>
       </section>
-    </main>
+    </div>
   );
 };
 
