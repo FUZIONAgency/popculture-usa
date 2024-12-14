@@ -24,6 +24,7 @@ import Retailers from "./pages/Retailers";
 import RetailerDetail from "./pages/RetailerDetail";
 import MyAccount from "./pages/MyAccount";
 import MyTournaments from "./pages/MyTournaments";
+import CreatePlayer from "./pages/CreatePlayer";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,16 @@ const App = () => (
               <Layout>
                 <ProtectedRoute>
                   <MyAccount />
+                </ProtectedRoute>
+              </Layout>
+            } 
+          />
+          <Route 
+            path="/create-player" 
+            element={
+              <Layout>
+                <ProtectedRoute>
+                  <CreatePlayer />
                 </ProtectedRoute>
               </Layout>
             } 
