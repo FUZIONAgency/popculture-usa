@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { format } from "date-fns";
@@ -18,7 +18,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
-// Convention colors array for rotating through different colors
 const conventionColors = [
   "#9b87f5", // Primary Purple
   "#7E69AB", // Secondary Purple
@@ -30,6 +29,7 @@ const conventionColors = [
 ];
 
 const Conventions = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{
     key: keyof typeof conventions[0] | null;
@@ -99,6 +99,20 @@ const Conventions = () => {
     });
   };
 
+  // Function to handle calendar date click
+  const handleDateClick = (date: Date) => {
+    // Find convention that matches the clicked date
+    const matchingConvention = conventions?.find(conv => {
+      const startDate = new Date(conv.start_date);
+      const endDate = new Date(conv.end_date);
+      return date >= startDate && date <= endDate;
+    });
+
+    if (matchingConvention) {
+      navigate(`/conventions/${matchingConvention.id}`);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -160,6 +174,7 @@ const Conventions = () => {
                 }}
                 modifiersStyles={modifiersStyles}
                 className="w-full border rounded-lg p-4"
+                onDayClick={handleDateClick}
               />
             </div>
           </div>
