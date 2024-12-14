@@ -7,6 +7,16 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { format } from "date-fns";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 // Convention colors array for rotating through different colors
 const conventionColors = [
@@ -20,6 +30,12 @@ const conventionColors = [
 ];
 
 const Conventions = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof typeof conventions[0] | null;
+    direction: "asc" | "desc";
+  }>({ key: null, direction: "asc" });
+
   const { data: conventions, isLoading } = useQuery({
     queryKey: ["conventions"],
     queryFn: async () => {
@@ -53,6 +69,35 @@ const Conventions = () => {
     };
     return acc;
   }, {});
+
+  // Filter and sort conventions
+  const filteredAndSortedConventions = conventions
+    ? conventions
+        .filter((convention) =>
+          Object.values(convention)
+            .join(" ")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        )
+        .sort((a, b) => {
+          if (!sortConfig.key) return 0;
+          
+          const aValue = a[sortConfig.key];
+          const bValue = b[sortConfig.key];
+          
+          if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+          if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+          return 0;
+        })
+    : [];
+
+  const handleSort = (key: keyof typeof conventions[0]) => {
+    setSortConfig({
+      key,
+      direction:
+        sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc",
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -120,36 +165,84 @@ const Conventions = () => {
           </div>
         </section>
 
-        {/* All Conventions Grid */}
+        {/* All Conventions Table */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">All Conventions</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {conventions?.map((convention) => (
-              <Link 
-                key={convention.id} 
-                to={`/conventions/${convention.id}`}
-                className="transition-transform hover:scale-105"
-              >
-                <Card className="h-full">
-                  <CardHeader>
-                    <CardTitle>{convention.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <img 
-                      src={convention.image_url} 
-                      alt={convention.name}
-                      className="w-full h-32 object-cover rounded-md mb-4"
-                    />
-                    <p className="text-muted-foreground mb-2">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">All Conventions</h2>
+            <Input
+              placeholder="Search conventions..."
+              className="max-w-sm"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleSort("name")}
+                  >
+                    Name {sortConfig.key === "name" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleSort("start_date")}
+                  >
+                    Start Date {sortConfig.key === "start_date" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleSort("location")}
+                  >
+                    Location {sortConfig.key === "location" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleSort("expected_attendees")}
+                  >
+                    Expected Attendees {sortConfig.key === "expected_attendees" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleSort("status")}
+                  >
+                    Status {sortConfig.key === "status" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredAndSortedConventions.map((convention) => (
+                  <TableRow key={convention.id}>
+                    <TableCell>
+                      <Link 
+                        to={`/conventions/${convention.id}`}
+                        className="text-primary hover:underline"
+                      >
+                        {convention.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
                       {format(new Date(convention.start_date), 'MMM dd, yyyy')}
-                    </p>
-                    <p className="text-muted-foreground">
-                      {convention.venue}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+                    </TableCell>
+                    <TableCell>{convention.location}</TableCell>
+                    <TableCell>{convention.expected_attendees?.toLocaleString() || 'TBD'}</TableCell>
+                    <TableCell>
+                      <span className={`inline-block px-2 py-1 rounded-full text-xs ${
+                        convention.status === 'upcoming' 
+                          ? 'bg-primary/20 text-primary'
+                          : convention.status === 'active'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {convention.status}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </section>
 
