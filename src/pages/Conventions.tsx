@@ -58,9 +58,16 @@ const Conventions = () => {
         {sortedConventions.map((convention) => (
           <Link key={convention.id} to={`/conventions/${convention.id}`}>
             <div className="border rounded-lg p-4 hover:shadow-lg transition-shadow">
+              <div className="flex justify-center mb-4">
+                <img 
+                  src={convention.image_url} 
+                  alt={convention.name}
+                  className="w-1/2 h-auto object-contain"
+                />
+              </div>
               <h2 className="text-xl font-semibold">{convention.name}</h2>
               <p className="text-gray-500">{format(new Date(convention.start_date), "MMMM d, yyyy")}</p>
-              <p className="mt-2">{convention.description}</p>
+              <p className="mt-2 line-clamp-2 text-gray-600">{convention.description}</p>
             </div>
           </Link>
         ))}
