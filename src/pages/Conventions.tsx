@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
 import { ConventionCalendar } from "@/components/ConventionCalendar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
 
 type Convention = Tables<"conventions">;
 
@@ -50,27 +51,38 @@ const Conventions = () => {
     return sortableConventions;
   }, [conventions, sortConfig]);
 
+  const featuredConvention = useMemo(() => {
+    return conventions?.find(conv => conv.is_featured);
+  }, [conventions]);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="container mx-auto py-8 space-y-8">
-      {/* Convention Calendar */}
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Convention Schedule</h2>
-        <ConventionCalendar
-          type="convention"
-          conventions={conventions?.map((conv) => ({
-            id: conv.id,
-            name: conv.name,
-            start_date: conv.start_date,
-            end_date: conv.end_date,
-            description: conv.description,
-            type: 'convention'
-          })) || []}
-        />
-      </div>
+      {/* Featured Convention */}
+      {featuredConvention && (
+        <div className="relative h-[400px] rounded-xl overflow-hidden">
+          <img 
+            src={featuredConvention.carousel_image || featuredConvention.image_url} 
+            alt={featuredConvention.name}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white p-8">
+            <span className="text-sm uppercase tracking-wider mb-2">Featured Convention</span>
+            <h1 className="text-4xl font-bold mb-4 text-center">{featuredConvention.name}</h1>
+            <p className="text-lg mb-6 text-center max-w-2xl">{featuredConvention.description}</p>
+            <Button 
+              variant="outline" 
+              asChild
+              className="text-white border-white hover:bg-white hover:text-black"
+            >
+              <Link to={`/conventions/${featuredConvention.id}`}>Learn More</Link>
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Convention Grid */}
       <div className="space-y-2">
@@ -93,6 +105,22 @@ const Conventions = () => {
             </Link>
           ))}
         </div>
+      </div>
+
+      {/* Convention Calendar */}
+      <div className="space-y-2">
+        <h2 className="text-2xl font-bold">Convention Schedule</h2>
+        <ConventionCalendar
+          type="convention"
+          conventions={conventions?.map((conv) => ({
+            id: conv.id,
+            name: conv.name,
+            start_date: conv.start_date,
+            end_date: conv.end_date,
+            description: conv.description,
+            type: 'convention'
+          })) || []}
+        />
       </div>
     </div>
   );
