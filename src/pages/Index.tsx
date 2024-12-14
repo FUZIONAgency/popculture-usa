@@ -22,13 +22,30 @@ interface Convention {
   image_url: string;
 }
 
-interface FeaturedItem {
+interface FeaturedConvention {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   image_url: string;
-  type: 'convention' | 'tournament' | 'retailer';
 }
+
+interface FeaturedTournament {
+  id: string;
+  title: string;
+  description: string | null;
+  image_url: string | null;
+}
+
+interface FeaturedRetailer {
+  id: string;
+  title: string;
+  description: string | null;
+  image_url: string | null;
+}
+
+type FeaturedItem = (FeaturedConvention | FeaturedTournament | FeaturedRetailer) & {
+  type: 'convention' | 'tournament' | 'retailer';
+};
 
 const Index = () => {
   const [conventions, setConventions] = useState<Convention[]>([]);
@@ -62,9 +79,36 @@ const Index = () => {
           .single();
 
         const items: FeaturedItem[] = [];
-        if (conventionData) items.push({ ...conventionData, type: 'convention' });
-        if (tournamentData) items.push({ ...tournamentData, type: 'tournament' });
-        if (retailerData) items.push({ ...retailerData, type: 'retailer' });
+        
+        if (conventionData) {
+          items.push({
+            id: conventionData.id,
+            title: conventionData.title,
+            description: conventionData.description,
+            image_url: conventionData.image_url,
+            type: 'convention'
+          });
+        }
+
+        if (tournamentData) {
+          items.push({
+            id: tournamentData.id,
+            title: tournamentData.title,
+            description: tournamentData.description,
+            image_url: tournamentData.image_url || '/placeholder.svg',
+            type: 'tournament'
+          });
+        }
+
+        if (retailerData) {
+          items.push({
+            id: retailerData.id,
+            title: retailerData.title,
+            description: retailerData.description,
+            image_url: retailerData.image_url || '/placeholder.svg',
+            type: 'retailer'
+          });
+        }
 
         setFeaturedItems(items);
       } catch (error) {
