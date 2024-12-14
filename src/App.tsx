@@ -13,11 +13,12 @@ import TermsConditions from "./pages/TermsConditions";
 import Contact from "./pages/Contact";
 import MediaKit from "./pages/MediaKit";
 import Metrics from "./pages/Metrics";
+import Tournaments from "./pages/Tournaments";
+import TournamentDetail from "./pages/TournamentDetail";
 
 const queryClient = new QueryClient();
 
 // Placeholder components for new routes
-const Tournaments = () => <div>Tournaments Page (Coming Soon)</div>;
 const Retailers = () => <div>Retailers Page (Coming Soon)</div>;
 const Games = () => <div>Games Page (Coming Soon)</div>;
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/" element={<Index />} />
           <Route path="/tournaments" element={<Tournaments />} />
+          <Route path="/tournaments/:id" element={<TournamentDetail />} />
           <Route path="/retailers" element={<Retailers />} />
           <Route path="/conventions" element={<Conventions />} />
           <Route path="/conventions/:id" element={<ConventionDetail />} />
