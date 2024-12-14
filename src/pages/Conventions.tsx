@@ -68,7 +68,7 @@ const Conventions = () => {
       return data;
     },
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    cacheTime: 10 * 60 * 1000, // Keep in memory for 10 minutes
+    gcTime: 10 * 60 * 1000, // Keep in memory for 10 minutes (renamed from cacheTime)
   });
 
   const nextTwoConventions = conventions?.slice(0, 2) || [];
