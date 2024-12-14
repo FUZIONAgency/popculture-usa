@@ -22,12 +22,13 @@ export const RetailersMapView = ({
   userLocation, 
   nearbyRetailerIds 
 }: RetailersMapViewProps) => {
+  // Increased height from 400px to 520px (30% increase)
   return (
     <MapContainer
       center={center}
       zoom={4}
       scrollWheelZoom={false}
-      style={{ height: '520px', width: '100%' }} {/* Increased from 400px to 520px (30% increase) */}
+      style={{ height: '520px', width: '100%' }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
