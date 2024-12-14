@@ -16,61 +16,73 @@ const MyAccount = () => {
 
   useEffect(() => {
     const getProfileAndPlayer = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        try {
-          // Get profile data
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select()
-            .eq('id', session.user.id)
-            .single();
-          
-          if (profileError) throw profileError;
-          
-          setProfile({
-            email: session.user.email,
-            ...profileData
-          });
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session?.user) {
+          navigate('/auth');
+          return;
+        }
 
-          // Check for player record
-          if (session.user.email) {
-            const { data: playerData, error: playerError } = await supabase
-              .from('players')
-              .select()
-              .eq('email', session.user.email)
-              .single();
-            
-            if (playerError) throw playerError;
+        // Get profile data
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profileError && profileError.code !== 'PGRST116') {
+          throw profileError;
+        }
+
+        setProfile({
+          email: session.user.email,
+          ...profileData
+        });
+
+        // Get player data if it exists
+        if (session.user.email) {
+          const { data: playerData, error: playerError } = await supabase
+            .from('players')
+            .select('*')
+            .eq('email', session.user.email)
+            .single();
+
+          if (playerError && playerError.code !== 'PGRST116') {
+            throw playerError;
+          }
+
+          if (playerData) {
             setPlayer(playerData);
 
-            // Get player game accounts with game system info
-            if (playerData) {
-              const { data: gameAccountsData, error: gameAccountsError } = await supabase
-                .from('player_game_accounts')
-                .select(`
-                  *,
-                  game_system:game_systems(*)
-                `)
-                .eq('player_id', playerData.id);
+            // Get player game accounts
+            const { data: gameAccountsData, error: gameAccountsError } = await supabase
+              .from('player_game_accounts')
+              .select(`
+                *,
+                game_system:game_systems(*)
+              `)
+              .eq('player_id', playerData.id);
 
-              if (gameAccountsError) throw gameAccountsError;
+            if (gameAccountsError) throw gameAccountsError;
 
+            if (gameAccountsData) {
               setGameAccounts(gameAccountsData.map(account => ({
                 ...account,
                 game_system: account.game_system[0]
               })));
             }
           }
-        } catch (error) {
-          console.error('Error fetching data:', error);
         }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     getProfileAndPlayer();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return (
