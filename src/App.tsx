@@ -22,6 +22,8 @@ import Tournaments from "./pages/Tournaments";
 import TournamentDetail from "./pages/TournamentDetail";
 import Retailers from "./pages/Retailers";
 import RetailerDetail from "./pages/RetailerDetail";
+import MyAccount from "./pages/MyAccount";
+import MyTournaments from "./pages/MyTournaments";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +64,26 @@ const App = () => (
           <Route path="/contact" element={<Layout><Contact /></Layout>} />
           <Route path="/media-kit" element={<Layout><MediaKit /></Layout>} />
           <Route path="/metrics" element={<Layout><Metrics /></Layout>} />
+          <Route 
+            path="/my-account" 
+            element={
+              <Layout>
+                <ProtectedRoute>
+                  <MyAccount />
+                </ProtectedRoute>
+              </Layout>
+            } 
+          />
+          <Route 
+            path="/my-tournaments" 
+            element={
+              <Layout>
+                <ProtectedRoute>
+                  <MyTournaments />
+                </ProtectedRoute>
+              </Layout>
+            } 
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Menu } from "lucide-react";
+import { Menu, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -84,20 +84,20 @@ const Navbar = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
-                    variant="outline"
-                    className="bg-green-600 hover:bg-green-700 text-white border-none"
+                    variant="ghost"
+                    className="text-white hover:bg-gray-800"
                   >
-                    Profile
+                    Account <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white border shadow-lg" align="end">
-                  <DropdownMenuItem className="hover:bg-gray-100">
-                    <div className="flex flex-col gap-1">
-                      <span className="font-medium">{user.email}</span>
-                      <span className="text-sm text-gray-500">User ID: {user.id}</span>
-                    </div>
+                <DropdownMenuContent className="w-56 bg-white" align="end">
+                  <DropdownMenuItem onClick={() => navigate('/my-account')}>
+                    My Account
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSignOut} className="hover:bg-gray-100">
+                  <DropdownMenuItem onClick={() => navigate('/my-tournaments')}>
+                    My Tournaments
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
