@@ -50,7 +50,12 @@ const MyAccount = () => {
               `)
               .eq('player_id', playerData.id);
             
-            setGameAccounts(gameAccountsData || []);
+            if (gameAccountsData) {
+              setGameAccounts(gameAccountsData.map(account => ({
+                ...account,
+                game_system: account.game_system[0] // Fix: Access first item of the array
+              })));
+            }
           }
         }
       }

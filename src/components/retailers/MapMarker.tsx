@@ -2,6 +2,7 @@ import { Marker, Popup } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Icon } from 'leaflet';
+import type { MarkerProps } from 'react-leaflet';
 
 interface MapMarkerProps {
   retailer: {
@@ -21,6 +22,7 @@ export const MapMarker = ({ retailer, icon }: MapMarkerProps) => {
     <Marker 
       position={[retailer.lat, retailer.lng]} 
       icon={icon}
+      {...({} as MarkerProps)}
     >
       <Popup>
         <div className="space-y-2">
