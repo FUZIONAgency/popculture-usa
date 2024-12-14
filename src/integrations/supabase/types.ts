@@ -301,6 +301,7 @@ export type Database = {
           expected_attendees: number | null
           id: string
           image_url: string
+          is_featured: boolean | null
           location: string
           name: string
           registration_url: string | null
@@ -317,6 +318,7 @@ export type Database = {
           expected_attendees?: number | null
           id?: string
           image_url: string
+          is_featured?: boolean | null
           location: string
           name: string
           registration_url?: string | null
@@ -333,6 +335,7 @@ export type Database = {
           expected_attendees?: number | null
           id?: string
           image_url?: string
+          is_featured?: boolean | null
           location?: string
           name?: string
           registration_url?: string | null
@@ -536,6 +539,7 @@ export type Database = {
           email: string | null
           hours_of_operation: Json | null
           id: string
+          is_featured: boolean | null
           lat: number
           lng: number
           name: string
@@ -555,6 +559,7 @@ export type Database = {
           email?: string | null
           hours_of_operation?: Json | null
           id?: string
+          is_featured?: boolean | null
           lat: number
           lng: number
           name: string
@@ -574,6 +579,7 @@ export type Database = {
           email?: string | null
           hours_of_operation?: Json | null
           id?: string
+          is_featured?: boolean | null
           lat?: number
           lng?: number
           name?: string

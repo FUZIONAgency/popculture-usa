@@ -11,6 +11,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
 
 interface Convention {
   id: string;
@@ -21,13 +22,61 @@ interface Convention {
   image_url: string;
 }
 
+interface FeaturedItem {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  type: 'convention' | 'tournament' | 'retailer';
+}
+
 const Index = () => {
   const [conventions, setConventions] = useState<Convention[]>([]);
+  const [featuredItems, setFeaturedItems] = useState<FeaturedItem[]>([]);
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchFeaturedItems = async () => {
+      try {
+        // Fetch featured convention
+        const { data: conventionData } = await supabase
+          .from('conventions')
+          .select('id, name as title, description, image_url')
+          .eq('is_featured', true)
+          .single();
+
+        // Fetch featured tournament
+        const { data: tournamentData } = await supabase
+          .from('tournaments')
+          .select('id, title, description, image_url')
+          .eq('is_featured', true)
+          .single();
+
+        // Fetch featured retailer
+        const { data: retailerData } = await supabase
+          .from('retailers')
+          .select('id, name as title, description, store_photo as image_url')
+          .eq('is_featured', true)
+          .single();
+
+        const items: FeaturedItem[] = [];
+        if (conventionData) items.push({ ...conventionData, type: 'convention' });
+        if (tournamentData) items.push({ ...tournamentData, type: 'tournament' });
+        if (retailerData) items.push({ ...retailerData, type: 'retailer' });
+
+        setFeaturedItems(items);
+      } catch (error) {
+        console.error('Error fetching featured items:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load featured items",
+          variant: "destructive",
+        });
+      }
+    };
+
     const fetchConventions = async () => {
       try {
         const { data, error } = await supabase
@@ -49,28 +98,50 @@ const Index = () => {
       }
     };
 
+    fetchFeaturedItems();
     fetchConventions();
   }, [toast]);
 
-  const heroImages = [
-    "/hero1.jpg",
-    "/hero2.jpg",
-    "/hero3.jpg"
-  ];
+  const handleFeaturedClick = (item: FeaturedItem) => {
+    switch (item.type) {
+      case 'convention':
+        navigate(`/conventions/${item.id}`);
+        break;
+      case 'tournament':
+        navigate(`/tournaments/${item.id}`);
+        break;
+      case 'retailer':
+        navigate(`/retailers/${item.id}`);
+        break;
+    }
+  };
 
   return (
     <div className="min-h-screen">
-      {/* Hero Carousel Section */}
+      {/* Featured Items Carousel Section */}
       <section className="w-full h-[60vh] mb-12">
         <Carousel className="w-full h-full">
           <CarouselContent>
-            {heroImages.map((image, index) => (
+            {featuredItems.map((item, index) => (
               <CarouselItem key={index} className="h-full">
                 <div 
-                  className="w-full h-full bg-cover bg-center"
-                  style={{ backgroundImage: `url(${image})` }}
+                  className="relative w-full h-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${item.image_url})` }}
                 >
-                  <div className="w-full h-full bg-black/40 flex items-center justify-center" />
+                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white p-8">
+                    <span className="text-sm uppercase tracking-wider mb-2">
+                      Featured {item.type}
+                    </span>
+                    <h2 className="text-4xl font-bold mb-4 text-center">{item.title}</h2>
+                    <p className="text-lg mb-6 text-center max-w-2xl">{item.description}</p>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => handleFeaturedClick(item)}
+                      className="text-white border-white hover:bg-white hover:text-black"
+                    >
+                      Learn More
+                    </Button>
+                  </div>
                 </div>
               </CarouselItem>
             ))}
