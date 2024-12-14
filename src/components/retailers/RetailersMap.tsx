@@ -59,12 +59,12 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
   const [searchRadius, setSearchRadius] = useState<string>("10");
   const [nearbyRetailerIds, setNearbyRetailerIds] = useState<Set<string>>(new Set());
   
-  const center = userLocation || (retailers.length > 0
+  const defaultCenter: [number, number] = retailers.length > 0
     ? [
         retailers.reduce((sum, r) => sum + r.lat, 0) / retailers.length,
         retailers.reduce((sum, r) => sum + r.lng, 0) / retailers.length,
-      ] as [number, number]
-    : [39.8283, -98.5795] as [number, number]); // Center of USA
+      ]
+    : [39.8283, -98.5795]; // Center of USA
 
   const findNearbyRetailers = () => {
     if ("geolocation" in navigator) {
@@ -118,7 +118,7 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
       />
       
       <MapContainer
-        defaultCenter={center}
+        center={defaultCenter}
         zoom={4}
         scrollWheelZoom={false}
         style={{ height: '400px', width: '100%' }}
