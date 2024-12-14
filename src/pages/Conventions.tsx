@@ -33,7 +33,7 @@ const setCachedConventions = (data: Convention[]) => {
 const Conventions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{
-    key: keyof Convention | null;
+    key: keyof Tables<"conventions">["Row"] | null;
     direction: "asc" | "desc";
   }>({ key: null, direction: "asc" });
 
@@ -85,7 +85,7 @@ const Conventions = () => {
         })
     : [];
 
-  const handleSort = (key: keyof Convention) => {
+  const handleSort = (key: keyof Tables<"conventions">["Row"]) => {
     setSortConfig({
       key,
       direction:
