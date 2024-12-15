@@ -38,12 +38,15 @@ export const PlayerCard = ({ player }: PlayerCardProps) => {
         ) : (
           <div className="text-center py-4">
             <p className="text-gray-600 mb-4">No player account found</p>
-            <Button 
-              variant="destructive"
-              onClick={() => navigate('/create-player')}
-            >
-              Create a Player Account
-            </Button>
+            <div className="flex justify-end">
+              <Button 
+                variant="destructive"
+                onClick={() => navigate('/create-player')}
+                className="w-40 h-40 text-lg font-semibold"
+              >
+                Create a Player Account
+              </Button>
+            </div>
           </div>
         )}
       </CardContent>
