@@ -20,6 +20,7 @@ import MediaKit from "./pages/MediaKit";
 import Metrics from "./pages/Metrics";
 import Tournaments from "./pages/Tournaments";
 import TournamentDetail from "./pages/TournamentDetail";
+import TournamentRegistration from "./pages/TournamentRegistration";
 import Retailers from "./pages/Retailers";
 import RetailerDetail from "./pages/RetailerDetail";
 import MyAccount from "./pages/MyAccount";
@@ -54,6 +55,16 @@ const App = () => (
           <Route path="/" element={<Layout><Index /></Layout>} />
           <Route path="/tournaments" element={<Layout><Tournaments /></Layout>} />
           <Route path="/tournaments/:id" element={<Layout><TournamentDetail /></Layout>} />
+          <Route 
+            path="/tournaments/:tournamentId/register" 
+            element={
+              <Layout>
+                <ProtectedRoute>
+                  <TournamentRegistration />
+                </ProtectedRoute>
+              </Layout>
+            } 
+          />
           <Route path="/conventions" element={<Layout><Conventions /></Layout>} />
           <Route path="/conventions/:id" element={<Layout><ConventionDetail /></Layout>} />
           <Route path="/retailers" element={<Layout><Retailers /></Layout>} />
