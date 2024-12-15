@@ -84,15 +84,18 @@ export default function TournamentDetail() {
       }
     },
     onSuccess: (_, status) => {
-      toast.success(
-        status === 'registered' 
+      toast({
+        title: status === 'registered' 
           ? 'Successfully registered for tournament' 
-          : 'Registration canceled'
-      );
+          : 'Registration canceled',
+        variant: "default"
+      });
     },
     onError: (error) => {
-      toast.error('Action failed', {
-        description: error.message
+      toast({
+        title: 'Action failed',
+        description: error.message,
+        variant: "destructive"
       });
     },
   });
