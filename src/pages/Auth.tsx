@@ -2,11 +2,13 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
 const AuthPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -20,8 +22,10 @@ const AuthPage = () => {
 
           if (profileError) throw profileError;
 
-          // If no profile exists, create one
-          if (!profiles || profiles.length === 0) {
+          // If no profile exists, create one and treat as new user
+          const isNewUser = !profiles || profiles.length === 0;
+          
+          if (isNewUser) {
             const { error: createError } = await supabase
               .from('profiles')
               .insert([
@@ -33,13 +37,19 @@ const AuthPage = () => {
               ]);
 
             if (createError) throw createError;
+            
+            // New user - redirect to My Account
+            toast.success("Welcome to Pop Culture USA!", {
+              description: "Let's set up your account."
+            });
+            navigate("/my-account");
+          } else {
+            // Existing user - return to previous page
+            toast.success("Welcome back!", {
+              description: "You've been successfully logged in."
+            });
+            navigate(from);
           }
-
-          // Success message and navigation
-          toast.success("Welcome back!", {
-            description: "You've been successfully logged in."
-          });
-          navigate("/");
         } catch (error: any) {
           console.error('Error handling auth:', error);
           toast.error("Authentication Error", {
@@ -52,7 +62,7 @@ const AuthPage = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, from]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-white px-4">
