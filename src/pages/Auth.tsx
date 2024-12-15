@@ -73,12 +73,6 @@ const AuthPage = () => {
     };
   }, [navigate, from]);
 
-  const handleAuthError = (error: any) => {
-    toast.error("Authentication Error", {
-      description: error.message
-    });
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-white px-4">
       <div className="w-full max-w-md">
@@ -101,7 +95,6 @@ const AuthPage = () => {
               },
             }}
             providers={[]}
-            onError={handleAuthError}
           />
         </div>
       </div>
