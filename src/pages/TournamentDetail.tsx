@@ -51,7 +51,7 @@ export default function TournamentDetail() {
         .select('*')
         .eq('tournament_id', id)
         .eq('player_id', currentPlayer.id)
-        .single();
+        .maybeSingle(); // Use maybeSingle() instead of single()
 
       if (error && error.code !== 'PGRST116') throw error;
       return data;
