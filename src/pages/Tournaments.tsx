@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, MapPin, Trophy, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Tournament {
   id: string;
@@ -23,6 +24,22 @@ interface Tournament {
 
 const TournamentCard = ({ tournament, featured = false }: { tournament: Tournament; featured?: boolean }) => {
   const navigate = useNavigate();
+  const { data: currentPlayer } = useQuery({
+    queryKey: ['current-player'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from('players')
+        .select('*')
+        .eq('auth_id', user.id)
+        .single();
+
+      if (error) return null;
+      return data;
+    },
+  });
 
   return (
     <Card 
@@ -40,6 +57,19 @@ const TournamentCard = ({ tournament, featured = false }: { tournament: Tourname
         {featured && (
           <div className="absolute top-4 right-4 bg-primary px-3 py-1 rounded-full text-white">
             Featured Tournament
+          </div>
+        )}
+        {currentPlayer && (
+          <div 
+            className="absolute top-4 right-4 z-10"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/tournaments/${tournament.id}/register`);
+            }}
+          >
+            <Button variant="destructive">
+              Register Now
+            </Button>
           </div>
         )}
       </div>
