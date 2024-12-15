@@ -7,6 +7,7 @@ import type { PlayerGameAccount, GameSystem } from '@/types/game';
 import { ProfileCard } from '@/components/account/ProfileCard';
 import { PlayerCard } from '@/components/account/PlayerCard';
 import { GameAccountsCard } from '@/components/account/GameAccountsCard';
+import { RetailerConnectionsCard } from '@/components/account/RetailerConnectionsCard';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from 'lucide-react';
 
@@ -144,6 +145,7 @@ const MyAccount = () => {
         <ProfileCard profile={profile} />
         <PlayerCard player={player} />
         <GameAccountsCard player={player} gameAccounts={gameAccounts} />
+        <RetailerConnectionsCard player={player} />
       </div>
     </div>
   );
