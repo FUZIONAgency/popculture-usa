@@ -86,6 +86,9 @@ const MyAccount = () => {
 
             if (gameAccountsData) {
               setGameAccounts(gameAccountsData);
+              if (gameAccountsData.length === 0) {
+                setIsNewUser(true);
+              }
             }
           } else {
             setIsNewUser(true);
@@ -113,7 +116,7 @@ const MyAccount = () => {
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-6">My Account</h1>
       
-      {isNewUser && (
+      {isNewUser && !player && (
         <Alert variant="default" className="mb-6">
           <Info className="h-4 w-4" />
           <AlertTitle>Welcome to Pop Culture USA!</AlertTitle>
@@ -122,6 +125,17 @@ const MyAccount = () => {
               <li>First, you need to create your player account.</li>
               <li>Second, connect your Ultraman League registration number by choosing the Ultraman TCG game system and entering the number assigned by Tsuburaya.</li>
             </ol>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {isNewUser && player && gameAccounts.length === 0 && (
+        <Alert variant="default" className="mb-6">
+          <Info className="h-4 w-4" />
+          <AlertTitle>Thank you for creating your player record</AlertTitle>
+          <AlertDescription>
+            Now you need to register your Ultraman League ID number by clicking on Add Game and selecting Ultraman TCG. 
+            You should have been assigned a Tsuburaya ID number starting with 'us-9999999'.
           </AlertDescription>
         </Alert>
       )}
