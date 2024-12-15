@@ -27,7 +27,7 @@ export const RetailersMapView = ({
 }: RetailersMapViewProps) => {
   return (
     <MapContainer
-      center={center as [number, number]}
+      center={center}
       zoom={4}
       scrollWheelZoom={false}
       style={{ height: '520px', width: '100%' }}
@@ -44,7 +44,7 @@ export const RetailersMapView = ({
         />
       ))}
       {userLocation && (
-        <Marker position={userLocation} icon={userIcon}>
+        <Marker position={userLocation} icon={userIcon as any}>
           <Popup>Your Location</Popup>
         </Marker>
       )}

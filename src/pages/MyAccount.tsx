@@ -63,15 +63,15 @@ const MyAccount = () => {
           const { data: playerData, error: playerError } = await supabase
             .from('players')
             .select('*')
-            .eq('email', session.user.email)
-            .single();
+            .eq('email', session.user.email);
 
-          if (playerError && playerError.code !== 'PGRST116') {
+          if (playerError) {
             throw playerError;
           }
 
-          if (playerData) {
-            setPlayer(playerData);
+          // Check if we got any player data
+          if (playerData && playerData.length > 0) {
+            setPlayer(playerData[0]);
 
             // Get player game accounts with game system information
             const { data: gameAccountsData, error: gameAccountsError } = await supabase
@@ -80,7 +80,7 @@ const MyAccount = () => {
                 *,
                 game_system:game_systems(*)
               `)
-              .eq('player_id', playerData.id);
+              .eq('player_id', playerData[0].id);
 
             if (gameAccountsError) throw gameAccountsError;
 
