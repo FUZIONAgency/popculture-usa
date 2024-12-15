@@ -1,25 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
-import type { Player } from '@/types/player';
 import type { PlayerGameAccount, GameSystem } from '@/types/game';
 import { ProfileCard } from '@/components/account/ProfileCard';
 import { PlayerCard } from '@/components/account/PlayerCard';
 import { GameAccountsCard } from '@/components/account/GameAccountsCard';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from 'lucide-react';
+import { usePlayer } from '@/contexts/PlayerContext';
 
 const MyAccount = () => {
   const navigate = useNavigate();
+  const { currentPlayer, loading: playerLoading } = usePlayer();
   const [profile, setProfile] = useState<any>(null);
-  const [player, setPlayer] = useState<Player | null>(null);
   const [gameAccounts, setGameAccounts] = useState<(PlayerGameAccount & { game_system: GameSystem })[]>([]);
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
 
   useEffect(() => {
-    const getProfileAndPlayer = async () => {
+    const getProfileAndGameAccounts = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
@@ -28,7 +28,7 @@ const MyAccount = () => {
           return;
         }
 
-        // First create profile if it doesn't exist
+        // Get profile data
         const { data: existingProfile, error: checkError } = await supabase
           .from('profiles')
           .select('*')
@@ -58,41 +58,26 @@ const MyAccount = () => {
           setProfile(existingProfile);
         }
 
-        // Get player data if it exists
-        if (session.user.email) {
-          const { data: playerData, error: playerError } = await supabase
-            .from('players')
-            .select('*')
-            .eq('email', session.user.email);
+        // Get game accounts if player exists
+        if (currentPlayer) {
+          const { data: gameAccountsData, error: gameAccountsError } = await supabase
+            .from('player_game_accounts')
+            .select(`
+              *,
+              game_system:game_systems(*)
+            `)
+            .eq('player_id', currentPlayer.id);
 
-          if (playerError) {
-            throw playerError;
-          }
+          if (gameAccountsError) throw gameAccountsError;
 
-          // Check if we got any player data
-          if (playerData && playerData.length > 0) {
-            setPlayer(playerData[0]);
-
-            // Get player game accounts with game system information
-            const { data: gameAccountsData, error: gameAccountsError } = await supabase
-              .from('player_game_accounts')
-              .select(`
-                *,
-                game_system:game_systems(*)
-              `)
-              .eq('player_id', playerData[0].id);
-
-            if (gameAccountsError) throw gameAccountsError;
-
-            if (gameAccountsData) {
-              setGameAccounts(gameAccountsData);
-              if (gameAccountsData.length === 0) {
-                setIsNewUser(true);
-              }
+          if (gameAccountsData) {
+            setGameAccounts(gameAccountsData);
+            if (gameAccountsData.length === 0) {
+              setIsNewUser(true);
             }
-          } else {
-            setIsNewUser(true);
           }
+        } else {
+          setIsNewUser(true);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -101,10 +86,10 @@ const MyAccount = () => {
       }
     };
 
-    getProfileAndPlayer();
-  }, [navigate]);
+    getProfileAndGameAccounts();
+  }, [navigate, currentPlayer]);
 
-  if (loading) {
+  if (loading || playerLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -116,7 +101,7 @@ const MyAccount = () => {
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-6">My Account</h1>
       
-      {isNewUser && !player && (
+      {isNewUser && !currentPlayer && (
         <Alert variant="default" className="mb-6">
           <Info className="h-4 w-4" />
           <AlertTitle>Welcome to Pop Culture USA!</AlertTitle>
@@ -129,7 +114,7 @@ const MyAccount = () => {
         </Alert>
       )}
 
-      {isNewUser && player && gameAccounts.length === 0 && (
+      {isNewUser && currentPlayer && gameAccounts.length === 0 && (
         <Alert variant="default" className="mb-6">
           <Info className="h-4 w-4" />
           <AlertTitle>Thank you for creating your player record</AlertTitle>
@@ -142,8 +127,8 @@ const MyAccount = () => {
       
       <div className="space-y-6">
         <ProfileCard profile={profile} />
-        <PlayerCard player={player} />
-        <GameAccountsCard player={player} gameAccounts={gameAccounts} />
+        <PlayerCard player={currentPlayer} />
+        <GameAccountsCard player={currentPlayer} gameAccounts={gameAccounts} />
       </div>
     </div>
   );
