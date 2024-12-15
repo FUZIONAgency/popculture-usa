@@ -20,12 +20,18 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user?.email) {
-          const { data: playerData } = await supabase
+          const { data: players, error } = await supabase
             .from('players')
             .select('*')
-            .eq('email', session.user.email)
-            .maybeSingle();
+            .eq('email', session.user.email);
 
+          if (error) {
+            console.error('Error fetching player:', error);
+            return;
+          }
+
+          // Take the first player if exists
+          const playerData = players && players.length > 0 ? players[0] : null;
           setCurrentPlayer(playerData);
           console.log('Current player:', playerData); // Debug log
         }
@@ -40,12 +46,18 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user?.email) {
-        const { data: playerData } = await supabase
+        const { data: players, error } = await supabase
           .from('players')
           .select('*')
-          .eq('email', session.user.email)
-          .maybeSingle();
+          .eq('email', session.user.email);
 
+        if (error) {
+          console.error('Auth state change - Error fetching player:', error);
+          return;
+        }
+
+        // Take the first player if exists
+        const playerData = players && players.length > 0 ? players[0] : null;
         setCurrentPlayer(playerData);
         console.log('Auth state change - Current player:', playerData); // Debug log
       } else {
