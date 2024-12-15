@@ -21,12 +21,16 @@ const MyAccount = () => {
   useEffect(() => {
     const getProfileAndGameAccounts = async () => {
       try {
+        console.log('Fetching profile and game accounts...'); // Debug log
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session?.user) {
+          console.log('No session found, redirecting to auth'); // Debug log
           navigate('/auth');
           return;
         }
+
+        console.log('Session user:', session.user); // Debug log
 
         // Get profile data
         const { data: existingProfile, error: checkError } = await supabase
@@ -34,6 +38,8 @@ const MyAccount = () => {
           .select('*')
           .eq('id', session.user.id)
           .single();
+
+        console.log('Profile fetch result:', { existingProfile, checkError }); // Debug log
 
         if (checkError && checkError.code === 'PGRST116') {
           // Profile doesn't exist, create it
@@ -60,6 +66,7 @@ const MyAccount = () => {
 
         // Get game accounts if player exists
         if (currentPlayer) {
+          console.log('Current player found, fetching game accounts:', currentPlayer); // Debug log
           const { data: gameAccountsData, error: gameAccountsError } = await supabase
             .from('player_game_accounts')
             .select(`
@@ -70,6 +77,8 @@ const MyAccount = () => {
 
           if (gameAccountsError) throw gameAccountsError;
 
+          console.log('Game accounts fetch result:', gameAccountsData); // Debug log
+
           if (gameAccountsData) {
             setGameAccounts(gameAccountsData);
             if (gameAccountsData.length === 0) {
@@ -77,6 +86,7 @@ const MyAccount = () => {
             }
           }
         } else {
+          console.log('No current player found, setting isNewUser to true'); // Debug log
           setIsNewUser(true);
         }
       } catch (error) {
@@ -86,10 +96,13 @@ const MyAccount = () => {
       }
     };
 
-    getProfileAndGameAccounts();
-  }, [navigate, currentPlayer]);
+    if (!playerLoading) {
+      getProfileAndGameAccounts();
+    }
+  }, [navigate, currentPlayer, playerLoading]);
 
-  if (loading || playerLoading) {
+  // Show loading state only when both loading states are true
+  if (loading && playerLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin" />
