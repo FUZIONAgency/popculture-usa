@@ -19,9 +19,14 @@ const AuthPage = () => {
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
-            .maybeSingle(); // Use maybeSingle() instead of single()
+            .maybeSingle();
 
-          if (profileError) throw profileError;
+          if (profileError) {
+            toast.error("Error checking profile", {
+              description: profileError.message
+            });
+            return;
+          }
 
           // If no profile exists, create one and treat as new user
           if (!profiles) {
@@ -35,7 +40,12 @@ const AuthPage = () => {
                 }
               ]);
 
-            if (createError) throw createError;
+            if (createError) {
+              toast.error("Error creating profile", {
+                description: createError.message
+              });
+              return;
+            }
             
             // New user - redirect to My Account
             toast.success("Welcome to Pop Culture USA!", {
@@ -85,6 +95,11 @@ const AuthPage = () => {
               },
             }}
             providers={[]}
+            onError={(error) => {
+              toast.error("Authentication Error", {
+                description: error.message
+              });
+            }}
           />
         </div>
       </div>
