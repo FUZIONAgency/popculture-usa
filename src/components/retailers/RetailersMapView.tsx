@@ -1,10 +1,16 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { MapMarker } from './MapMarker';
 import { defaultIcon, nearbyIcon, userIcon } from '@/hooks/use-retailers-map';
-import type { Tables } from '@/integrations/supabase/types';
+import type { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-type Retailer = Tables<'retailers'>;
+interface Retailer {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  address: string;
+}
 
 interface RetailersMapViewProps {
   retailers: Retailer[];
@@ -21,14 +27,14 @@ export const RetailersMapView = ({
 }: RetailersMapViewProps) => {
   return (
     <MapContainer
-      center={center}
+      center={center as [number, number]}
       zoom={4}
       scrollWheelZoom={false}
       style={{ height: '520px', width: '100%' }}
     >
       <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {retailers.map((retailer) => (
         <MapMarker

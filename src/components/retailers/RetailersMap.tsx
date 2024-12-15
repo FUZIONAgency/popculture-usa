@@ -34,6 +34,14 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
     defaultCenter,
   } = useRetailersMap(retailers);
 
+  const simplifiedRetailers = retailers.map(({ id, name, lat, lng, address }) => ({
+    id,
+    name,
+    lat,
+    lng,
+    address
+  }));
+
   return (
     <div className="space-y-4">
       <MapSearch 
@@ -43,7 +51,7 @@ export const RetailersMap = ({ retailers }: RetailersMapProps) => {
       />
       
       <RetailersMapView
-        retailers={retailers}
+        retailers={simplifiedRetailers}
         center={defaultCenter}
         userLocation={userLocation}
         nearbyRetailerIds={nearbyRetailerIds}

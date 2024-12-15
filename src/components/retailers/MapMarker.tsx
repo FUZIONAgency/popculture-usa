@@ -1,18 +1,23 @@
 import { Marker, Popup } from 'react-leaflet';
 import type { Icon } from 'leaflet';
-import type { Tables } from '@/integrations/supabase/types';
 
-type Retailer = Tables<'retailers'>;
+interface Retailer {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  address: string;
+}
 
 interface MapMarkerProps {
   retailer: Retailer;
-  icon: Icon;
+  icon?: Icon;
 }
 
 export const MapMarker = ({ retailer, icon }: MapMarkerProps) => {
   return (
     <Marker 
-      position={[retailer.lat as number, retailer.lng as number]} 
+      position={[retailer.lat, retailer.lng]} 
       icon={icon}
     >
       <Popup>
