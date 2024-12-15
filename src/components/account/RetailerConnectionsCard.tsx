@@ -22,6 +22,18 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
     queryKey: ['connectedRetailers', player?.id],
     queryFn: async () => {
       if (!player?.id) return [];
+      
+      // First verify this player belongs to the current user
+      const { data: playerData, error: playerError } = await supabase
+        .from('players')
+        .select('id, auth_id')
+        .eq('id', player.id)
+        .single();
+
+      if (playerError || !playerData) {
+        throw new Error('Unauthorized access');
+      }
+
       const { data, error } = await supabase
         .from('player_retailers')
         .select(`
@@ -64,6 +76,18 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
   const connectRetailer = useMutation({
     mutationFn: async (retailerId: string) => {
       if (!player?.id) throw new Error('No player ID');
+
+      // First verify this player belongs to the current user
+      const { data: playerData, error: playerError } = await supabase
+        .from('players')
+        .select('id, auth_id')
+        .eq('id', player.id)
+        .single();
+
+      if (playerError || !playerData) {
+        throw new Error('Unauthorized access');
+      }
+
       const { error } = await supabase
         .from('player_retailers')
         .insert({
@@ -80,7 +104,8 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
       toast.success('Successfully connected to retailer');
       setIsConnecting(false);
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Connection error:', error);
       toast.error('Failed to connect to retailer');
     }
   });
@@ -89,6 +114,18 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
   const disconnectRetailer = useMutation({
     mutationFn: async (retailerId: string) => {
       if (!player?.id) throw new Error('No player ID');
+
+      // First verify this player belongs to the current user
+      const { data: playerData, error: playerError } = await supabase
+        .from('players')
+        .select('id, auth_id')
+        .eq('id', player.id)
+        .single();
+
+      if (playerError || !playerData) {
+        throw new Error('Unauthorized access');
+      }
+
       const { error } = await supabase
         .from('player_retailers')
         .delete()
@@ -102,7 +139,8 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
       queryClient.invalidateQueries({ queryKey: ['availableRetailers'] });
       toast.success('Successfully disconnected from retailer');
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Disconnection error:', error);
       toast.error('Failed to disconnect from retailer');
     }
   });
