@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 export default function TournamentDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   const { data: tournament } = useQuery({
@@ -24,11 +25,36 @@ export default function TournamentDetail() {
     },
   });
 
+  const { data: currentPlayer } = useQuery({
+    queryKey: ['current-player'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from('players')
+        .select('*')
+        .eq('email', user.email)
+        .single();
+
+      if (error) {
+        console.error('Error fetching player:', error);
+        return null;
+      }
+      return data;
+    },
+  });
+
   const handleRegister = () => {
-    toast({
-      title: "Registration Coming Soon",
-      description: "Tournament registration will be available soon.",
-    });
+    if (currentPlayer) {
+      navigate(`/tournaments/${id}/register`);
+    } else {
+      toast({
+        title: "Registration Unavailable",
+        description: "Please create a player profile to register.",
+        variant: "destructive"
+      });
+    }
   };
 
   if (!tournament) {
@@ -96,7 +122,11 @@ export default function TournamentDetail() {
                 <CardTitle className="text-lg">Registration</CardTitle>
               </CardHeader>
               <CardContent>
-                <Button onClick={handleRegister} className="w-full">
+                <Button 
+                  onClick={handleRegister} 
+                  className="w-full"
+                  disabled={!currentPlayer}
+                >
                   Register Now
                 </Button>
               </CardContent>
