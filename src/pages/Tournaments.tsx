@@ -34,9 +34,12 @@ const TournamentCard = ({ tournament, featured = false }: { tournament: Tourname
         .from('players')
         .select('*')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle(); // Changed from single() to maybeSingle()
 
-      if (error) return null;
+      if (error) {
+        console.error('Error fetching player:', error);
+        return null;
+      }
       return data;
     },
   });

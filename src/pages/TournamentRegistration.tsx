@@ -17,7 +17,7 @@ const TournamentRegistration = () => {
         .from('tournaments')
         .select('*')
         .eq('id', tournamentId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -34,7 +34,7 @@ const TournamentRegistration = () => {
         .from('players')
         .select('*')
         .eq('auth_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
