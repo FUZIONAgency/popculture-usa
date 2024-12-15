@@ -33,8 +33,8 @@ const TournamentCard = ({ tournament, featured = false }: { tournament: Tourname
       const { data, error } = await supabase
         .from('players')
         .select('*')
-        .eq('auth_id', user.id)
-        .maybeSingle(); // Changed from single() to maybeSingle()
+        .eq('email', user.email)
+        .single();
 
       if (error) {
         console.error('Error fetching player:', error);
@@ -64,7 +64,7 @@ const TournamentCard = ({ tournament, featured = false }: { tournament: Tourname
         )}
         {currentPlayer && (
           <div 
-            className="absolute top-4 right-4 z-10"
+            className="absolute bottom-4 right-4 z-10"
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/tournaments/${tournament.id}/register`);

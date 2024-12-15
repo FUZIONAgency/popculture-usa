@@ -33,8 +33,8 @@ const TournamentRegistration = () => {
       const { data, error } = await supabase
         .from('players')
         .select('*')
-        .eq('auth_id', user.id)
-        .maybeSingle();
+        .eq('email', user.email)
+        .single();
 
       if (error) throw error;
       return data;
