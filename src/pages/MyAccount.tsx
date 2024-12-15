@@ -7,6 +7,8 @@ import type { PlayerGameAccount, GameSystem } from '@/types/game';
 import { ProfileCard } from '@/components/account/ProfileCard';
 import { PlayerCard } from '@/components/account/PlayerCard';
 import { GameAccountsCard } from '@/components/account/GameAccountsCard';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Info } from 'lucide-react';
 
 const MyAccount = () => {
   const navigate = useNavigate();
@@ -14,6 +16,7 @@ const MyAccount = () => {
   const [player, setPlayer] = useState<Player | null>(null);
   const [gameAccounts, setGameAccounts] = useState<(PlayerGameAccount & { game_system: GameSystem })[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isNewUser, setIsNewUser] = useState(false);
 
   useEffect(() => {
     const getProfileAndPlayer = async () => {
@@ -48,6 +51,7 @@ const MyAccount = () => {
 
           if (createError) throw createError;
           setProfile(newProfile);
+          setIsNewUser(true);
         } else if (checkError) {
           throw checkError;
         } else {
@@ -83,6 +87,8 @@ const MyAccount = () => {
             if (gameAccountsData) {
               setGameAccounts(gameAccountsData);
             }
+          } else {
+            setIsNewUser(true);
           }
         }
       } catch (error) {
@@ -106,6 +112,19 @@ const MyAccount = () => {
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-6">My Account</h1>
+      
+      {isNewUser && (
+        <Alert variant="default" className="mb-6">
+          <Info className="h-4 w-4" />
+          <AlertTitle>Welcome to Pop Culture USA!</AlertTitle>
+          <AlertDescription>
+            <ol className="list-decimal list-inside space-y-2">
+              <li>First, you need to create your player account.</li>
+              <li>Second, connect your Ultraman League registration number by choosing the Ultraman TCG game system and entering the number assigned by Tsuburaya.</li>
+            </ol>
+          </AlertDescription>
+        </Alert>
+      )}
       
       <div className="space-y-6">
         <ProfileCard profile={profile} />
