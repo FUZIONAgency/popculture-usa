@@ -79,7 +79,7 @@ const ConventionDetail = () => {
                 {convention.registration_url && (
                   <Button asChild>
                     <a href={convention.registration_url} target="_blank" rel="noopener noreferrer">
-                      Register Now
+                      Buy Tickets
                     </a>
                   </Button>
                 )}
