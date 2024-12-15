@@ -1,6 +1,6 @@
 import { Marker, Popup } from 'react-leaflet';
 import type { Icon } from 'leaflet';
-import { MarkerProps } from '@types/leaflet';
+import 'leaflet/dist/leaflet.css';
 
 interface Retailer {
   id: string;
@@ -19,7 +19,7 @@ export const MapMarker = ({ retailer, icon }: MapMarkerProps) => {
   return (
     <Marker 
       position={[retailer.lat, retailer.lng]} 
-      icon={icon as any} // Type assertion needed due to react-leaflet typing issue
+      icon={icon}
     >
       <Popup>
         <div className="text-sm">

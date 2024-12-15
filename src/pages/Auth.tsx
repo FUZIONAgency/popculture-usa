@@ -18,14 +18,13 @@ const AuthPage = () => {
           const { data: profiles, error: profileError } = await supabase
             .from('profiles')
             .select('*')
-            .eq('id', session.user.id);
+            .eq('id', session.user.id)
+            .maybeSingle(); // Use maybeSingle() instead of single()
 
           if (profileError) throw profileError;
 
           // If no profile exists, create one and treat as new user
-          const isNewUser = !profiles || profiles.length === 0;
-          
-          if (isNewUser) {
+          if (!profiles) {
             const { error: createError } = await supabase
               .from('profiles')
               .insert([
