@@ -62,7 +62,7 @@ export const useRetailerConnections = (player: Player | null) => {
       const { data, error } = await supabase
         .from('retailers')
         .select('*')
-        .eq('status', 'active')  // Only fetch active retailers
+        .eq('status', 'active')
         .order('name');
 
       if (error) {
@@ -74,7 +74,7 @@ export const useRetailerConnections = (player: Player | null) => {
       const connectedIds = new Set((connectedRetailers || []).map(r => r.id));
       return data.filter(retailer => !connectedIds.has(retailer.id));
     },
-    enabled: !!player?.id && !isLoadingConnections,  // Wait for connected retailers to load
+    enabled: !!player?.id && !isLoadingConnections,
   });
 
   // Connect retailer mutation
@@ -98,6 +98,7 @@ export const useRetailerConnections = (player: Player | null) => {
       }
     },
     onSuccess: () => {
+      // Invalidate both queries to trigger a refresh
       queryClient.invalidateQueries({ queryKey: ['connectedRetailers'] });
       queryClient.invalidateQueries({ queryKey: ['availableRetailers'] });
       toast.success('Successfully connected to retailer');
@@ -124,6 +125,7 @@ export const useRetailerConnections = (player: Player | null) => {
       if (error) throw error;
     },
     onSuccess: () => {
+      // Invalidate both queries to trigger a refresh
       queryClient.invalidateQueries({ queryKey: ['connectedRetailers'] });
       queryClient.invalidateQueries({ queryKey: ['availableRetailers'] });
       toast.success('Successfully disconnected from retailer');
