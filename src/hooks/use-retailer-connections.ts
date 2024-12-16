@@ -37,8 +37,6 @@ export const useRetailerConnections = (player: Player | null) => {
         .eq('player_id', player.id)
         .eq('status', 'active');
 
-      console.log('connections:',connections);
-      
       if (connectionsError) {
         console.error('Error fetching player_retailers:', connectionsError);
         throw connectionsError;
