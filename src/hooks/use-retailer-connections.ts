@@ -7,24 +7,19 @@ import type { Retailer } from "@/types/retailer";
 export const useRetailerConnections = (player: Player | null) => {
   const queryClient = useQueryClient();
 
-  // Verify player ownership
+  // Verify player ownership by matching emails
   const verifyPlayerOwnership = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user?.id || !player?.id) {
+    if (!session?.user?.email || !player?.email) {
       throw new Error('Authentication required');
     }
 
-    const { data: playerData, error: playerError } = await supabase
-      .from('players')
-      .select('id, auth_id')
-      .eq('id', player.id)
-      .single();
-
-    if (playerError || !playerData || playerData.auth_id !== session.user.id) {
+    // Verify that the player email matches the authenticated user's email
+    if (player.email !== session.user.email) {
       throw new Error('Unauthorized access');
     }
 
-    return playerData;
+    return true;
   };
 
   // Fetch connected retailers
