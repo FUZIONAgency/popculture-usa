@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, Plus } from "lucide-react";
@@ -20,6 +20,12 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
     connectRetailer,
     disconnectRetailer,
   } = useRetailerConnections(player);
+
+  useEffect(() => {
+    if (player?.id) {
+      localStorage.setItem('playerId', player.id);
+    }
+  }, [player?.id]);
 
   if (!player) {
     return null;
