@@ -14,18 +14,7 @@ const Games = () => {
     queryFn: async () => {
       const { data: campaignsData, error: campaignsError } = await supabase
         .from('campaigns')
-        .select(`
-          *,
-          campaign_players!inner(
-            player_id,
-            role_type,
-            players(
-              alias,
-              alias_image_url
-            )
-          )
-        `)
-        .eq('campaign_players.role_type', 'owner')
+        .select('*')
         .order('created_at', { ascending: false });
       
       if (campaignsError) throw campaignsError;
@@ -42,8 +31,7 @@ const Games = () => {
           
           return {
             ...campaign,
-            current_players: count || 0,
-            owner: campaign.campaign_players[0]?.players
+            current_players: count || 0
           };
         })
       );
@@ -86,11 +74,6 @@ const Games = () => {
                   <p className="text-sm">
                     Players: {campaign.current_players}/{campaign.max_players}
                   </p>
-                  {campaign.owner && (
-                    <p className="text-sm mt-2">
-                      Owner: {campaign.owner.alias}
-                    </p>
-                  )}
                 </div>
               </CardContent>
             </Card>
