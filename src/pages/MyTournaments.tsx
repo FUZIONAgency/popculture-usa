@@ -37,8 +37,7 @@ const MyTournaments = () => {
               end_date,
               venue,
               location,
-              status,
-              prize_pool
+              status
             )
           `)
           .eq('player_id', currentPlayer.id);
@@ -103,9 +102,6 @@ const MyTournaments = () => {
                     <p>Start: {new Date(tournament.start_date).toLocaleDateString()}</p>
                     <p>End: {new Date(tournament.end_date).toLocaleDateString()}</p>
                     <p>Location: {tournament.venue}</p>
-                    {tournament.prize_pool && (
-                      <p>Prize Pool: ${tournament.prize_pool.toLocaleString()}</p>
-                    )}
                     <p className="mt-2 font-medium">Status: {tournament.status}</p>
                   </div>
                 </div>
