@@ -2,14 +2,19 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useToast } from "@/hooks/use-toast";
 
 const Games = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { toast } = useToast();
 
-  const { data: campaigns, isLoading } = useQuery({
+  // Get current player from localStorage
+  const currentPlayer = JSON.parse(localStorage.getItem('currentPlayer') || '{}');
+
+  const { data: campaigns, isLoading, refetch } = useQuery({
     queryKey: ['campaigns'],
     queryFn: async () => {
       const { data: campaignsData, error } = await supabase
@@ -32,10 +37,17 @@ const Games = () => {
         const existingCampaign = acc.find(c => c.id === campaign.id);
         if (existingCampaign) {
           existingCampaign.current_players = (existingCampaign.current_players || 0) + 1;
+          // Check if current player is in this campaign
+          existingCampaign.isJoined = campaign.campaign_players.some(
+            (cp: { player_id: string }) => cp.player_id === currentPlayer?.id
+          );
         } else {
           acc.push({
             ...campaign,
-            current_players: 1
+            current_players: 1,
+            isJoined: campaign.campaign_players.some(
+              (cp: { player_id: string }) => cp.player_id === currentPlayer?.id
+            )
           });
         }
         return acc;
@@ -44,6 +56,38 @@ const Games = () => {
       return transformedCampaigns;
     },
   });
+
+  const handleJoinGame = async (campaignId: string) => {
+    try {
+      const { error } = await supabase
+        .from('campaign_players')
+        .insert([
+          {
+            campaign_id: campaignId,
+            player_id: currentPlayer.id,
+            role_type: 'player',
+            status: 'active'
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success!",
+        description: "You have successfully joined the game.",
+      });
+
+      // Refetch campaigns to update the UI
+      refetch();
+    } catch (error) {
+      console.error('Error joining game:', error);
+      toast({
+        title: "Error",
+        description: "Failed to join the game. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -81,6 +125,16 @@ const Games = () => {
                   </p>
                 </div>
               </CardContent>
+              <CardFooter>
+                {!campaign.isJoined && campaign.current_players < campaign.max_players && (
+                  <Button 
+                    onClick={() => handleJoinGame(campaign.id)}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    Join Game
+                  </Button>
+                )}
+              </CardFooter>
             </Card>
           ))}
         </div>
