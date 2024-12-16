@@ -32,25 +32,42 @@ export const useRetailerConnections = (player: Player | null) => {
 
       console.log('Fetching connected retailers for player:', player.id);
 
-      // Updated query to properly join tables and select retailer data
       const { data, error } = await supabase
         .from('retailers')
-        .select('*')
-        .in('id', (
-          supabase
-            .from('player_retailers')
-            .select('retailer_id')
-            .eq('player_id', player.id)
-            .eq('status', 'active')
-        ));
+        .select('*, player_retailers!inner(*)')
+        .eq('player_retailers.player_id', player.id)
+        .eq('player_retailers.status', 'active');
 
       if (error) {
         console.error('Error fetching connected retailers:', error);
         throw error;
       }
 
-      console.log('Connected retailers:', data);
-      return data as Retailer[];
+      // Clean up the data to match the Retailer type
+      const retailers = data.map(item => ({
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        address: item.address,
+        city: item.city,
+        state: item.state,
+        zip: item.zip,
+        phone: item.phone,
+        email: item.email,
+        website_url: item.website_url,
+        lat: item.lat,
+        lng: item.lng,
+        hours_of_operation: item.hours_of_operation,
+        status: item.status,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        store_photo: item.store_photo,
+        is_featured: item.is_featured,
+        carousel_image: item.carousel_image
+      }));
+
+      console.log('Connected retailers:', retailers);
+      return retailers;
     },
     enabled: !!player?.id,
   });
