@@ -136,13 +136,18 @@ export const useRetailerConnections = (player: Player | null) => {
 
       await verifyPlayerOwnership();
 
+      console.log('Disconnecting retailer:', retailerId, 'for player:', player.id);
+
       const { error } = await supabase
         .from('player_retailers')
         .delete()
         .eq('player_id', player.id)
         .eq('retailer_id', retailerId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Disconnection error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['connectedRetailers'] });
