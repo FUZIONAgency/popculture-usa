@@ -12,20 +12,31 @@ const Games = () => {
   const { data: campaigns, isLoading } = useQuery({
     queryKey: ['campaigns'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: campaignsData, error: campaignsError } = await supabase
         .from('campaigns')
-        .select(`
-          *,
-          campaign_players:campaign_players(count)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
-      
-      return data.map(campaign => ({
-        ...campaign,
-        current_players: campaign.campaign_players[0].count
-      }));
+      if (campaignsError) throw campaignsError;
+
+      // Fetch player counts for each campaign
+      const campaignsWithCounts = await Promise.all(
+        campaignsData.map(async (campaign) => {
+          const { count, error: countError } = await supabase
+            .from('campaign_players')
+            .select('*', { count: 'exact', head: true })
+            .eq('campaign_id', campaign.id);
+          
+          if (countError) throw countError;
+          
+          return {
+            ...campaign,
+            current_players: count || 0
+          };
+        })
+      );
+
+      return campaignsWithCounts;
     },
   });
 
