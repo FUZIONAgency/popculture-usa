@@ -54,7 +54,7 @@ const Games = () => {
                 <p className="text-muted-foreground">{campaign.description}</p>
                 <div className="mt-4">
                   <p className="text-sm">
-                    Players: {campaign.current_players || 0}/{campaign.max_players}
+                    Players: {campaign.min_players}/{campaign.max_players}
                   </p>
                 </div>
               </CardContent>
