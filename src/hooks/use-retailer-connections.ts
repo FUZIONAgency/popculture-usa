@@ -31,7 +31,7 @@ export const useRetailerConnections = (player: Player | null) => {
       
       // await verifyPlayerOwnership();
 
-      console.log('Fetching connected retailers for player:', player.id);
+      console.log('Fetching connected retailers for player id:', player.id);
 
       // First, let's check the player_retailers table directly
       const { data: connections, error: connectionsError } = await supabase
