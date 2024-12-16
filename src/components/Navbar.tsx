@@ -94,9 +94,6 @@ const Navbar = () => {
                   <DropdownMenuItem onClick={() => navigate('/my-account')}>
                     My Account
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/my-retailers')}>
-                    My Retailers
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/my-tournaments')}>
                     My Tournaments
                   </DropdownMenuItem>
