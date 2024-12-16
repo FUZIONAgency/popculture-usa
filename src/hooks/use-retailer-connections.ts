@@ -8,16 +8,22 @@ export const useRetailerConnections = (player: Player | null) => {
   const queryClient = useQueryClient();
 
   // Verify player ownership
-  const verifyPlayerOwnership = async (playerId: string) => {
+  const verifyPlayerOwnership = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user?.id || !player?.id) {
+      throw new Error('Authentication required');
+    }
+
     const { data: playerData, error: playerError } = await supabase
       .from('players')
       .select('id, auth_id')
-      .eq('id', playerId)
+      .eq('id', player.id)
       .single();
 
-    if (playerError || !playerData) {
+    if (playerError || !playerData || playerData.auth_id !== session.user.id) {
       throw new Error('Unauthorized access');
     }
+
     return playerData;
   };
 
@@ -27,7 +33,7 @@ export const useRetailerConnections = (player: Player | null) => {
     queryFn: async () => {
       if (!player?.id) return [];
       
-      await verifyPlayerOwnership(player.id);
+      await verifyPlayerOwnership();
 
       const { data, error } = await supabase
         .from('player_retailers')
@@ -72,7 +78,7 @@ export const useRetailerConnections = (player: Player | null) => {
     mutationFn: async (retailerId: string) => {
       if (!player?.id) throw new Error('No player ID');
 
-      await verifyPlayerOwnership(player.id);
+      await verifyPlayerOwnership();
 
       const { error } = await supabase
         .from('player_retailers')
@@ -103,7 +109,7 @@ export const useRetailerConnections = (player: Player | null) => {
     mutationFn: async (retailerId: string) => {
       if (!player?.id) throw new Error('No player ID');
 
-      await verifyPlayerOwnership(player.id);
+      await verifyPlayerOwnership();
 
       const { error } = await supabase
         .from('player_retailers')
