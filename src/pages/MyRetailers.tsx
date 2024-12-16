@@ -3,47 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Store } from "lucide-react";
 import { RetailerConnectionsCard } from "@/components/account/RetailerConnectionsCard";
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import type { Player } from "@/types/player";
 
 const MyRetailers = () => {
   const navigate = useNavigate();
-  const [playerId, setPlayerId] = useState<string | null>(null);
-
-  // Fetch the current player's ID
-  const { data: player, isLoading: isLoadingPlayer } = useQuery({
-    queryKey: ['currentPlayer'],
-    queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user?.id) return null;
-
-      const { data: player, error } = await supabase
-        .from('players')
-        .select('*')
-        .eq('auth_id', session.user.id)
-        .single();
-
-      if (error) throw error;
-      return player;
-    },
-  });
+  const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
 
   useEffect(() => {
-    if (player?.id) {
-      setPlayerId(player.id);
-      localStorage.setItem('playerId', player.id);
+    // Get player data from localStorage
+    const storedPlayer = localStorage.getItem('currentPlayer');
+    if (storedPlayer) {
+      try {
+        const playerData = JSON.parse(storedPlayer);
+        setCurrentPlayer(playerData);
+      } catch (error) {
+        console.error('Error parsing player data:', error);
+      }
     }
-  }, [player?.id]);
+  }, []);
 
-  if (isLoadingPlayer) {
-    return (
-      <div className="container py-8">
-        <p>Loading...</p>
-      </div>
-    );
-  }
-
-  if (!player) {
+  if (!currentPlayer) {
     return (
       <div className="container py-8">
         <div className="text-center">
@@ -65,7 +44,7 @@ const MyRetailers = () => {
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-8">My Retailers</h1>
-      <RetailerConnectionsCard player={player} />
+      <RetailerConnectionsCard player={currentPlayer} />
     </div>
   );
 };
