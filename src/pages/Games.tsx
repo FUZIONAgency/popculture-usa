@@ -14,11 +14,18 @@ const Games = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('campaigns')
-        .select('*')
+        .select(`
+          *,
+          campaign_players:campaign_players(count)
+        `)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      
+      return data.map(campaign => ({
+        ...campaign,
+        current_players: campaign.campaign_players[0].count
+      }));
     },
   });
 
@@ -54,7 +61,7 @@ const Games = () => {
                 <p className="text-muted-foreground">{campaign.description}</p>
                 <div className="mt-4">
                   <p className="text-sm">
-                    Players: {campaign.min_players}/{campaign.max_players}
+                    Players: {campaign.current_players}/{campaign.max_players}
                   </p>
                 </div>
               </CardContent>
