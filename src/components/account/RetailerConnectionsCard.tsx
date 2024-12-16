@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import type { Player } from "@/types/player";
 import { useRetailerConnections } from "@/hooks/use-retailer-connections";
 import { RetailerListItem } from "./RetailerListItem";
@@ -12,6 +13,10 @@ interface RetailerConnectionsCardProps {
 
 export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps) => {
   const [isConnecting, setIsConnecting] = useState(false);
+  const [nameFilter, setNameFilter] = useState("");
+  const [cityFilter, setCityFilter] = useState("");
+  const [stateFilter, setStateFilter] = useState("");
+  
   const {
     connectedRetailers,
     availableRetailers,
@@ -26,6 +31,14 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
       localStorage.setItem('playerId', player.id);
     }
   }, [player?.id]);
+
+  const filteredAvailableRetailers = availableRetailers
+    ?.filter(retailer => 
+      retailer.name.toLowerCase().includes(nameFilter.toLowerCase()) &&
+      retailer.city.toLowerCase().includes(cityFilter.toLowerCase()) &&
+      retailer.state.toLowerCase().includes(stateFilter.toLowerCase())
+    )
+    .slice(0, 10); // Limit to top 10 results
 
   if (!player) {
     return null;
@@ -69,11 +82,30 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
         ) : (
           <div className="mt-4 space-y-4">
             <h4 className="font-medium">Select a retailer to connect with:</h4>
+            
+            <div className="grid gap-3">
+              <Input
+                placeholder="Filter by name"
+                value={nameFilter}
+                onChange={(e) => setNameFilter(e.target.value)}
+              />
+              <Input
+                placeholder="Filter by city"
+                value={cityFilter}
+                onChange={(e) => setCityFilter(e.target.value)}
+              />
+              <Input
+                placeholder="Filter by state"
+                value={stateFilter}
+                onChange={(e) => setStateFilter(e.target.value)}
+              />
+            </div>
+
             {isLoadingRetailers ? (
               <p>Loading retailers...</p>
             ) : (
               <div className="space-y-2">
-                {availableRetailers?.map((retailer) => (
+                {filteredAvailableRetailers?.map((retailer) => (
                   <RetailerListItem
                     key={retailer.id}
                     retailer={retailer}
@@ -85,7 +117,12 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
             )}
             <Button
               variant="ghost"
-              onClick={() => setIsConnecting(false)}
+              onClick={() => {
+                setIsConnecting(false);
+                setNameFilter("");
+                setCityFilter("");
+                setStateFilter("");
+              }}
             >
               Cancel
             </Button>
