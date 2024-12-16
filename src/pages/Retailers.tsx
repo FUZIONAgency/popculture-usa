@@ -26,7 +26,7 @@ const Retailers = () => {
       const { data, error } = await supabase
         .from('retailers')
         .select('*')
-        .order('updated_at', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(3);
       
       if (error) throw error;
