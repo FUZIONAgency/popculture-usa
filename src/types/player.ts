@@ -19,3 +19,11 @@ export interface PlayerRetailerConnection {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface Profile {
+  id: string;
+  email?: string;
+  username?: string;
+  avatar_url?: string;
+  created_at?: string;
+}

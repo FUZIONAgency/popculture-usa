@@ -1,12 +1,8 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { RetailerFilters } from "./RetailerFilters";
 import { RetailerGrid } from "./RetailerGrid";
 import type { Retailer } from "@/types/retailer";
 
 interface ConnectRetailerSectionProps {
-  availableRetailers: Retailer[] | undefined;
+  availableRetailers: Retailer[] | null;
   isLoadingRetailers: boolean;
   onConnect: (id: string) => void;
   onCancel: () => void;
@@ -18,52 +14,29 @@ export const ConnectRetailerSection = ({
   onConnect,
   onCancel,
 }: ConnectRetailerSectionProps) => {
-  const [nameFilter, setNameFilter] = useState("");
-  const [cityFilter, setCityFilter] = useState("");
-  const [stateFilter, setStateFilter] = useState("");
-
-  const filteredRetailers = availableRetailers
-    ?.filter(retailer => 
-      retailer.name.toLowerCase().includes(nameFilter.toLowerCase()) &&
-      retailer.city.toLowerCase().includes(cityFilter.toLowerCase()) &&
-      retailer.state.toLowerCase().includes(stateFilter.toLowerCase())
-    )
-    .slice(0, 10); // Limit to top 10 results
+  if (isLoadingRetailers) {
+    return <p>Loading available retailers...</p>;
+  }
 
   return (
-    <div className="mt-4 space-y-4">
-      <h4 className="font-medium">Select a retailer to connect with:</h4>
-      
-      <RetailerFilters
-        nameFilter={nameFilter}
-        cityFilter={cityFilter}
-        stateFilter={stateFilter}
-        onNameFilterChange={setNameFilter}
-        onCityFilterChange={setCityFilter}
-        onStateFilterChange={setStateFilter}
-      />
-
-      {isLoadingRetailers ? (
-        <p>Loading retailers...</p>
+    <div className="mt-4">
+      <div className="mb-4">
+        <button
+          onClick={onCancel}
+          className="text-sm text-gray-500 hover:text-gray-700"
+        >
+          ← Back to connected retailers
+        </button>
+      </div>
+      {availableRetailers?.length === 0 ? (
+        <p className="text-gray-500">No retailers available to connect</p>
       ) : (
         <RetailerGrid
-          retailers={filteredRetailers || []}
+          retailers={availableRetailers || []}
           onConnect={onConnect}
           mode="available"
         />
       )}
-
-      <Button
-        variant="ghost"
-        onClick={() => {
-          onCancel();
-          setNameFilter("");
-          setCityFilter("");
-          setStateFilter("");
-        }}
-      >
-        Cancel
-      </Button>
     </div>
   );
 };
