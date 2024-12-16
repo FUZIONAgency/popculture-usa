@@ -91,7 +91,7 @@ export function RegistrationButton({ tournamentId, currentPlayer, registration }
     return (
       <Button 
         onClick={handleRegister} 
-        className="w-full"
+        className="w-full bg-green-500 hover:bg-green-600 text-white"
       >
         Register Now
       </Button>
@@ -102,8 +102,7 @@ export function RegistrationButton({ tournamentId, currentPlayer, registration }
     return (
       <Button 
         onClick={handleCancelRegistration} 
-        variant="destructive"
-        className="w-full bg-red-500 hover:bg-red-600 text-white"
+        className="w-full bg-green-500 hover:bg-green-600 text-white"
       >
         Cancel Registration
       </Button>
@@ -114,8 +113,7 @@ export function RegistrationButton({ tournamentId, currentPlayer, registration }
     return (
       <Button 
         onClick={handleRegisterAgain}
-        variant="destructive" 
-        className="w-full"
+        className="w-full bg-green-500 hover:bg-green-600 text-white"
       >
         Register Again
       </Button>
