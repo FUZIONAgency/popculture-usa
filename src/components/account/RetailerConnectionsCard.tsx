@@ -83,21 +83,24 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
           <div className="mt-4 space-y-4">
             <h4 className="font-medium">Select a retailer to connect with:</h4>
             
-            <div className="grid gap-3">
+            <div className="flex flex-col space-y-3 w-full">
               <Input
                 placeholder="Filter by name"
                 value={nameFilter}
                 onChange={(e) => setNameFilter(e.target.value)}
+                className="w-full"
               />
               <Input
                 placeholder="Filter by city"
                 value={cityFilter}
                 onChange={(e) => setCityFilter(e.target.value)}
+                className="w-full"
               />
               <Input
                 placeholder="Filter by state"
                 value={stateFilter}
                 onChange={(e) => setStateFilter(e.target.value)}
+                className="w-full"
               />
             </div>
 
