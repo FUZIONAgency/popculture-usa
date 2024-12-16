@@ -22,7 +22,7 @@ export const useRetailerConnections = (player: Player | null) => {
     return true;
   };
 
-  // Fetch connected retailers
+  // Fetch connected retailers with proper join
   const { data: connectedRetailers, isLoading: isLoadingConnections } = useQuery({
     queryKey: ['connectedRetailers', player?.id],
     queryFn: async () => {
@@ -30,15 +30,24 @@ export const useRetailerConnections = (player: Player | null) => {
       
       await verifyPlayerOwnership();
 
+      console.log('Fetching connected retailers for player:', player.id);
+
       const { data, error } = await supabase
         .from('player_retailers')
         .select(`
-          retailer_id,
-          retailers (
+          retailer:retailers (
             id,
             name,
             city,
-            state
+            state,
+            address,
+            zip,
+            phone,
+            email,
+            website_url,
+            lat,
+            lng,
+            status
           )
         `)
         .eq('player_id', player.id)
@@ -48,7 +57,11 @@ export const useRetailerConnections = (player: Player | null) => {
         console.error('Error fetching connected retailers:', error);
         throw error;
       }
-      return data.map(pr => pr.retailers) as Retailer[];
+
+      // Transform the data to match the Retailer type
+      const retailers = data.map(item => item.retailer) as Retailer[];
+      console.log('Connected retailers:', retailers);
+      return retailers;
     },
     enabled: !!player?.id,
   });
@@ -98,7 +111,6 @@ export const useRetailerConnections = (player: Player | null) => {
       }
     },
     onSuccess: () => {
-      // Invalidate both queries to trigger a refresh
       queryClient.invalidateQueries({ queryKey: ['connectedRetailers'] });
       queryClient.invalidateQueries({ queryKey: ['availableRetailers'] });
       toast.success('Successfully connected to retailer');
@@ -125,7 +137,6 @@ export const useRetailerConnections = (player: Player | null) => {
       if (error) throw error;
     },
     onSuccess: () => {
-      // Invalidate both queries to trigger a refresh
       queryClient.invalidateQueries({ queryKey: ['connectedRetailers'] });
       queryClient.invalidateQueries({ queryKey: ['availableRetailers'] });
       toast.success('Successfully disconnected from retailer');
