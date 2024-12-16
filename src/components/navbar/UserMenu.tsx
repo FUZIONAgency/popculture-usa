@@ -34,6 +34,9 @@ export const UserMenu = () => {
         <DropdownMenuItem onClick={() => navigate('/my-tournaments')}>
           My Tournaments
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/my-retailers')}>
+          My Retailers
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
           Sign Out
         </DropdownMenuItem>
