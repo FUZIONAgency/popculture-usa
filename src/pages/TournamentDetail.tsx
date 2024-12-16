@@ -22,6 +22,19 @@ export default function TournamentDetail() {
     },
   });
 
+  const { data: participantCount } = useQuery({
+    queryKey: ["tournament-participants", id],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("tournament_entries")
+        .select("*", { count: 'exact', head: true })
+        .eq("tournament_id", id);
+
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
   const { data: currentPlayer } = useQuery({
     queryKey: ['current-player'],
     queryFn: async () => {
@@ -51,7 +64,7 @@ export default function TournamentDetail() {
         .select('*')
         .eq('tournament_id', id)
         .eq('player_id', currentPlayer.id)
-        .maybeSingle(); // Use maybeSingle() instead of single()
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') throw error;
       return data;
@@ -114,7 +127,7 @@ export default function TournamentDetail() {
               <CardContent className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-primary" />
                 <span className="text-2xl font-bold">
-                  {tournament.current_participants}/{tournament.max_participants}
+                  {participantCount}/{tournament.max_participants}
                 </span>
               </CardContent>
             </Card>
