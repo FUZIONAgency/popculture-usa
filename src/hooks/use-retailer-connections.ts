@@ -32,36 +32,25 @@ export const useRetailerConnections = (player: Player | null) => {
 
       console.log('Fetching connected retailers for player:', player.id);
 
+      // Updated query to properly join tables and select retailer data
       const { data, error } = await supabase
-        .from('player_retailers')
-        .select(`
-          retailer:retailers (
-            id,
-            name,
-            city,
-            state,
-            address,
-            zip,
-            phone,
-            email,
-            website_url,
-            lat,
-            lng,
-            status
-          )
-        `)
-        .eq('player_id', player.id)
-        .eq('status', 'active');
+        .from('retailers')
+        .select('*')
+        .in('id', (
+          supabase
+            .from('player_retailers')
+            .select('retailer_id')
+            .eq('player_id', player.id)
+            .eq('status', 'active')
+        ));
 
       if (error) {
         console.error('Error fetching connected retailers:', error);
         throw error;
       }
 
-      // Transform the data to match the Retailer type
-      const retailers = data.map(item => item.retailer) as Retailer[];
-      console.log('Connected retailers:', retailers);
-      return retailers;
+      console.log('Connected retailers:', data);
+      return data as Retailer[];
     },
     enabled: !!player?.id,
   });
