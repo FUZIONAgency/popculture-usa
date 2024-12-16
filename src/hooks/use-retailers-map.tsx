@@ -52,7 +52,9 @@ export const useRetailersMap = (retailers: Retailer[]) => {
       Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+    const distance = R * c;
+    console.log(`Distance calculated: ${distance} miles`);
+    return distance;
   };
 
   const toRad = (value: number): number => {
@@ -66,13 +68,17 @@ export const useRetailersMap = (retailers: Retailer[]) => {
           const userLat = position.coords.latitude;
           const userLng = position.coords.longitude;
           setUserLocation([userLat, userLng]);
+          console.log(`User location: ${userLat}, ${userLng}`);
+          console.log(`Search radius: ${searchRadius} miles`);
 
           // Filter retailers within the specified radius
           const nearbyRetailers = retailers.filter(retailer => {
             const distance = calculateDistance(userLat, userLng, retailer.lat, retailer.lng);
+            console.log(`Retailer ${retailer.name}: ${distance} miles away`);
             return distance <= Number(searchRadius);
           });
 
+          console.log(`Found ${nearbyRetailers.length} nearby retailers`);
           setNearbyRetailerIds(new Set(nearbyRetailers.map(r => r.id)));
           toast.success(`Found ${nearbyRetailers.length} retailers within ${searchRadius} miles`);
         },
