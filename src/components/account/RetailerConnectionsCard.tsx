@@ -44,8 +44,8 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
         ) : (
           <RetailerGrid
             retailers={connectedRetailers || []}
-            onDisconnect={(retailerId: string, playerRetailerId: string) => {
-              disconnectRetailer.mutate({ retailerId, playerRetailerId });
+            onDisconnect={(playerRetailerId: string) => {
+              disconnectRetailer.mutate({ playerRetailerId });
             }}
             mode="connected"
             playerRetailerConnections={playerRetailerConnections}

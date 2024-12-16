@@ -138,31 +138,12 @@ export const useRetailerConnections = (player: Player | null) => {
 
   // Disconnect retailer mutation
   const disconnectRetailer = useMutation({
-    mutationFn: async ({ retailerId, playerRetailerId }: { retailerId: string, playerRetailerId: string }) => {
-      if (!player?.id) throw new Error('No player ID');
-
-      await verifyPlayerOwnership();
-
-      console.log('Disconnecting retailer:', retailerId, 'for player:', player.id);
-
-      // First, verify the connection exists
-      const { data: existingConnection, error: verifyError } = await supabase
-        .from('player_retailers')
-        .select('id')
-        .eq('player_id', player.id)
-        .eq('retailer_id', retailerId)
-        .single();
-
-      if (verifyError || !existingConnection) {
-        console.error('Connection verification error:', verifyError);
-        throw new Error('Connection not found');
-      }
+    mutationFn: async ({ playerRetailerId }: { playerRetailerId: string }) => {
 
       const { error } = await supabase
         .from('player_retailers')
         .delete()
-        .eq('player_id', player.id)
-        .eq('retailer_id', retailerId);
+        .eq('id', playerRetailerId);
 
       if (error) {
         console.error('Disconnection error:', error);
