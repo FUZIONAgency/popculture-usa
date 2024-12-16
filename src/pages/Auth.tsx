@@ -24,14 +24,11 @@ const AuthPage = () => {
       }
 
       if (playerData) {
-        // Store player data in localStorage
         localStorage.setItem('currentPlayer', JSON.stringify(playerData));
-        console.log('Player data stored:', playerData);
       }
 
       return playerData;
     } catch (error) {
-      console.error('Error fetching player data:', error);
       return null;
     }
   };
@@ -91,7 +88,6 @@ const AuthPage = () => {
             navigate(from);
           }
         } catch (error: any) {
-          console.error('Error handling auth:', error);
           toast.error("Authentication Error", {
             description: error.message
           });

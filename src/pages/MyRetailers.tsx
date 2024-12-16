@@ -29,17 +29,14 @@ const MyRetailers = () => {
           .single();
 
         if (error) {
-          console.error('Error fetching player:', error);
           return;
         }
 
         if (player) {
-          console.log('Found player:', player);
           setCurrentPlayer(player);
           localStorage.setItem('currentPlayer', JSON.stringify(player));
         }
       } catch (error) {
-        console.error('Error checking session:', error);
       } finally {
         setLoading(false);
       }
