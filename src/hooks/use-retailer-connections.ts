@@ -32,11 +32,28 @@ export const useRetailerConnections = (player: Player | null) => {
 
       console.log('Fetching connected retailers for player:', player.id);
 
+      // First, let's check the player_retailers table directly
+      const { data: connections, error: connectionsError } = await supabase
+        .from('player_retailers')
+        .select('*')
+        .eq('player_id', player.id)
+        .eq('status', 'active');
+
+      console.log('Player retailer connections:', connections);
+
+      if (connectionsError) {
+        console.error('Error fetching player_retailers:', connectionsError);
+        throw connectionsError;
+      }
+
+      // Now fetch the full retailer data
       const { data, error } = await supabase
         .from('retailers')
         .select('*, player_retailers!inner(*)')
         .eq('player_retailers.player_id', player.id)
         .eq('player_retailers.status', 'active');
+
+      console.log('Raw retailer data from join:', data);
 
       if (error) {
         console.error('Error fetching connected retailers:', error);
