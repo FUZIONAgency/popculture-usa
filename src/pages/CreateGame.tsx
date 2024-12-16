@@ -18,22 +18,12 @@ const CreateGame = () => {
     e.preventDefault();
 
     try {
-      // Get the current user's ID
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("User not authenticated");
+      // Get the current player from localStorage
+      const currentPlayerStr = localStorage.getItem('currentPlayer');
+      if (!currentPlayerStr) {
+        throw new Error("No player information found");
       }
-
-      // First, get the player record for the current user
-      const { data: playerData, error: playerError } = await supabase
-        .from('players')
-        .select('id')
-        .eq('auth_id', user.id)
-        .single();
-
-      if (playerError || !playerData) {
-        throw new Error("Player record not found");
-      }
+      const currentPlayer = JSON.parse(currentPlayerStr);
 
       // Create the campaign
       const { data: campaign, error: campaignError } = await supabase
@@ -57,13 +47,13 @@ const CreateGame = () => {
         throw campaignError || new Error("Failed to create campaign");
       }
 
-      // Create the campaign_players record for the owner
+      // Create the campaign_players record for the owner using currentPlayer
       const { error: playerRecordError } = await supabase
         .from('campaign_players')
         .insert([
           {
             campaign_id: campaign.id,
-            player_id: playerData.id,
+            player_id: currentPlayer.id,
             role_type: 'owner',
             status: 'active'
           }
