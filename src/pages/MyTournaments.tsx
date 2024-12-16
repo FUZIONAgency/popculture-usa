@@ -12,27 +12,19 @@ const MyTournaments = () => {
   useEffect(() => {
     const getMyTournaments = async () => {
       try {
-        // First get the current player
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user) {
+        // First check localStorage for currentPlayer
+        const currentPlayerStr = localStorage.getItem('currentPlayer');
+        if (!currentPlayerStr) {
+          console.log('No current player found in localStorage');
           setLoading(false);
           return;
         }
 
-        // Get the player record for the current user
-        const { data: playerData } = await supabase
-          .from('players')
-          .select('id')
-          .eq('auth_id', session.user.id)
-          .single();
-
-        if (!playerData) {
-          setLoading(false);
-          return;
-        }
+        const currentPlayer = JSON.parse(currentPlayerStr) as Player;
+        console.log('Current player from localStorage:', currentPlayer);
 
         // Get tournament entries and related tournament data for the player
-        const { data: tournamentEntries } = await supabase
+        const { data: tournamentEntries, error } = await supabase
           .from('tournament_entries')
           .select(`
             tournament:tournaments (
@@ -48,16 +40,25 @@ const MyTournaments = () => {
               prize_pool
             )
           `)
-          .eq('player_id', playerData.id);
+          .eq('player_id', currentPlayer.id);
+
+        if (error) {
+          console.error('Error fetching tournament entries:', error);
+          setLoading(false);
+          return;
+        }
+
+        console.log('Tournament entries:', tournamentEntries);
 
         // Extract tournaments from entries and filter out any null values
         const playerTournaments = tournamentEntries
           ?.map(entry => entry.tournament)
           .filter((tournament): tournament is Tournament => tournament !== null) || [];
 
+        console.log('Player tournaments:', playerTournaments);
         setTournaments(playerTournaments);
       } catch (error) {
-        console.error('Error fetching tournaments:', error);
+        console.error('Error in getMyTournaments:', error);
       } finally {
         setLoading(false);
       }
