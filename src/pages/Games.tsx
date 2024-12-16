@@ -126,7 +126,7 @@ const Games = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                {currentPlayer?.id && !campaign.isJoined && campaign.current_players < campaign.max_players && (
+                {!campaign.isJoined && campaign.current_players < campaign.max_players && (
                   <Button 
                     onClick={() => handleJoinGame(campaign.id)}
                     className="w-full bg-green-500 hover:bg-green-600 text-white"
