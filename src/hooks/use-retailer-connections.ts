@@ -64,7 +64,7 @@ export const useRetailerConnections = (player: Player | null) => {
       const connectedIds = new Set(connectedRetailers?.map(r => r.id));
       return data.filter(retailer => !connectedIds.has(retailer.id));
     },
-    enabled: !!player?.id,
+    enabled: !!player?.id && !!connectedRetailers,
   });
 
   // Connect retailer mutation
@@ -82,7 +82,10 @@ export const useRetailerConnections = (player: Player | null) => {
           status: 'active'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Connection error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['connectedRetailers'] });
