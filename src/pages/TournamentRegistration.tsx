@@ -89,7 +89,11 @@ const TournamentRegistration = () => {
           </div>
 
           <div className="flex justify-end space-x-4">
-            <Button variant="outline" onClick={() => navigate(`/tournaments/${tournamentId}`)}>
+            <Button 
+              variant="outline" 
+              className="bg-red-500 hover:bg-red-600 text-white" 
+              onClick={() => navigate(`/tournaments/${tournamentId}`)}
+            >
               Cancel
             </Button>
             <Button 
