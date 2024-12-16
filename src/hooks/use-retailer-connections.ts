@@ -26,9 +26,10 @@ export const useRetailerConnections = (player: Player | null) => {
   const { data: connectedRetailers, isLoading: isLoadingConnections } = useQuery({
     queryKey: ['connectedRetailers', player?.id],
     queryFn: async () => {
+      console.log('PlayerID:', player.id);
       if (!player?.id) return [];
       
-      await verifyPlayerOwnership();
+      // await verifyPlayerOwnership();
 
       console.log('Fetching connected retailers for player:', player.id);
 
