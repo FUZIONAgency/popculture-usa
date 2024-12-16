@@ -1,24 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Menu, ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { NavLinks } from "./navbar/NavLinks";
+import { UserMenu } from "./navbar/UserMenu";
+import { MobileMenu } from "./navbar/MobileMenu";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Get initial session
@@ -36,31 +26,6 @@ const Navbar = () => {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
-  };
-
-  const NavLinks = () => (
-    <>
-      <Link to="/tournaments" className="text-white hover:text-red-500 transition-colors">
-        Tournaments
-      </Link>
-      <Link to="/retailers" className="text-white hover:text-red-500 transition-colors">
-        Retailers
-      </Link>
-      <Link to="/conventions" className="text-white hover:text-red-500 transition-colors">
-        Conventions
-      </Link>
-      <Link to="/games" className="text-white hover:text-red-500 transition-colors">
-        Games
-      </Link>
-      <Link to="/blog" className="text-white hover:text-red-500 transition-colors">
-        Blog
-      </Link>
-    </>
-  );
 
   return (
     <nav className="bg-black w-full py-4 px-6">
@@ -81,27 +46,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           {!loading && (
             user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost"
-                    className="text-white hover:bg-gray-800"
-                  >
-                    Account <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-white" align="end">
-                  <DropdownMenuItem onClick={() => navigate('/my-account')}>
-                    My Account
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/my-tournaments')}>
-                    My Tournaments
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <UserMenu />
             ) : (
               <Link to="/auth">
                 <Button 
@@ -115,18 +60,7 @@ const Navbar = () => {
           )}
 
           <div className="md:hidden">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-white">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="bg-black w-[300px]">
-                <div className="flex flex-col gap-6 mt-8">
-                  <NavLinks />
-                </div>
-              </SheetContent>
-            </Sheet>
+            <MobileMenu />
           </div>
         </div>
       </div>
