@@ -145,6 +145,19 @@ export const useRetailerConnections = (player: Player | null) => {
 
       console.log('Disconnecting retailer:', retailerId, 'for player:', player.id);
 
+      // First, verify the connection exists
+      const { data: existingConnection, error: verifyError } = await supabase
+        .from('player_retailers')
+        .select('id')
+        .eq('player_id', player.id)
+        .eq('retailer_id', retailerId)
+        .single();
+
+      if (verifyError || !existingConnection) {
+        console.error('Connection verification error:', verifyError);
+        throw new Error('Connection not found');
+      }
+
       const { error } = await supabase
         .from('player_retailers')
         .delete()
