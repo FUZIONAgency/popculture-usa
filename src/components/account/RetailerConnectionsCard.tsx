@@ -83,7 +83,7 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
           <div className="mt-4 space-y-4">
             <h4 className="font-medium">Select a retailer to connect with:</h4>
             
-            <div className="flex flex-col space-y-3 w-full">
+            <div className="flex flex-col md:flex-row md:gap-4 space-y-3 md:space-y-0 w-full">
               <Input
                 placeholder="Filter by name"
                 value={nameFilter}
