@@ -16,7 +16,7 @@ export const MapSearch = ({
   return (
     <div className="flex gap-4 items-end">
       <div className="space-y-2">
-        <Label htmlFor="search-radius">Miles Range</Label>
+        <Label htmlFor="search-radius" className="text-left">Miles Range</Label>
         <Input
           id="search-radius"
           type="number"

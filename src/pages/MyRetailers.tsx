@@ -13,7 +13,6 @@ import { toast } from "sonner";
 const MyRetailers = () => {
   const [playerId, setPlayerId] = useState<string | null>(localStorage.getItem('playerId'));
   const [searchQuery, setSearchQuery] = useState('');
-  const [isConnecting, setIsConnecting] = useState(true);
   const [searchRadius, setSearchRadius] = useState('10');
   
   const {
@@ -91,7 +90,7 @@ const MyRetailers = () => {
         <div className="flex gap-4 items-center">
           <div className="flex-1">
             <div className="space-y-2">
-              <Label htmlFor="retailer-search">Filter By Name</Label>
+              <Label htmlFor="retailer-search" className="text-left">Filter By Name</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
                 <Input
