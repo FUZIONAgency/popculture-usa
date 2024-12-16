@@ -29,7 +29,7 @@ export const useRetailerConnections = (player: Player | null) => {
       
       const { data, error } = await supabase
         .from('player_retailers')
-        .select('id, retailer_id')
+        .select('id, retailer_id, player_id')
         .eq('player_id', player.id)
         .eq('status', 'active');
 
@@ -140,16 +140,16 @@ export const useRetailerConnections = (player: Player | null) => {
   const disconnectRetailer = useMutation({
     mutationFn: async ({ retailerId, playerRetailerId }: { retailerId: string, playerRetailerId: string }) => {
       if (!player?.id) throw new Error('No player ID');
-      if (!playerRetailerId) throw new Error('No player retailer ID provided');
 
       await verifyPlayerOwnership();
 
-      console.log('Disconnecting retailer:', retailerId, 'with connection ID:', playerRetailerId);
+      console.log('Disconnecting retailer:', retailerId, 'for player:', player.id);
 
       const { error } = await supabase
         .from('player_retailers')
         .delete()
-        .eq('id', playerRetailerId);
+        .eq('player_id', player.id)
+        .eq('retailer_id', retailerId);
 
       if (error) {
         console.error('Disconnection error:', error);
