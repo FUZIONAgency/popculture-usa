@@ -3,31 +3,60 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const RetailerDetail = () => {
   const { id } = useParams();
 
-  const { data: retailer, isLoading } = useQuery({
+  const { data: retailer, isLoading, error } = useQuery({
     queryKey: ['retailer', id],
     queryFn: async () => {
+      if (!id) throw new Error('No retailer ID provided');
+
       const { data, error } = await supabase
         .from('retailers')
         .select('*')
         .eq('id', id)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching retailer:', error);
+        throw error;
+      }
+      
+      if (!data) {
+        throw new Error('Retailer not found');
+      }
+
       return data;
     },
+    retry: false,
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : 'Failed to load retailer details');
+    }
   });
 
   if (isLoading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return (
+      <div className="container mx-auto px-4 py-8 flex justify-center items-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
 
-  if (!retailer) {
-    return <div className="container mx-auto px-4 py-8">Retailer not found</div>;
+  if (error || !retailer) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="max-w-4xl mx-auto">
+          <CardContent className="py-8">
+            <p className="text-center text-gray-600">
+              {error instanceof Error ? error.message : 'Retailer not found'}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
