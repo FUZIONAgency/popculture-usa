@@ -21,7 +21,7 @@ const Games = () => {
         .from('campaigns')
         .select(`
           *,
-          campaign_players!inner (
+          campaign_players (
             player_id
           )
         `)
@@ -34,25 +34,13 @@ const Games = () => {
       }
 
       // Transform the data to count players for each campaign
-      const transformedCampaigns = campaignsData.reduce((acc, campaign) => {
-        const existingCampaign = acc.find(c => c.id === campaign.id);
-        if (existingCampaign) {
-          existingCampaign.current_players = (existingCampaign.current_players || 0) + 1;
-          // Check if current player is in this campaign
-          existingCampaign.isJoined = campaign.campaign_players.some(
-            (cp: { player_id: string }) => cp.player_id === currentPlayer?.id
-          );
-        } else {
-          acc.push({
-            ...campaign,
-            current_players: 1,
-            isJoined: campaign.campaign_players.some(
-              (cp: { player_id: string }) => cp.player_id === currentPlayer?.id
-            )
-          });
-        }
-        return acc;
-      }, [] as any[]);
+      const transformedCampaigns = campaignsData.map(campaign => ({
+        ...campaign,
+        current_players: campaign.campaign_players?.length || 0,
+        isJoined: campaign.campaign_players?.some(
+          (cp: { player_id: string }) => cp.player_id === currentPlayer?.id
+        ) || false
+      }));
 
       return transformedCampaigns;
     },
