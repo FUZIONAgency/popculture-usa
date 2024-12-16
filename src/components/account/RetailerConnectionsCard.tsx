@@ -58,7 +58,7 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
         ) : connectedRetailers?.length === 0 ? (
           <p className="text-gray-500">No connected retailers</p>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {connectedRetailers?.map((retailer) => (
               <RetailerListItem
                 key={retailer.id}
@@ -107,7 +107,7 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
             {isLoadingRetailers ? (
               <p>Loading retailers...</p>
             ) : (
-              <div className="space-y-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {filteredAvailableRetailers?.map((retailer) => (
                   <RetailerListItem
                     key={retailer.id}

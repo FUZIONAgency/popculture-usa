@@ -17,10 +17,10 @@ export const RetailerListItem = ({
   mode 
 }: RetailerListItemProps) => {
   return (
-    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+    <div className="flex flex-col h-full justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
       <div>
         {mode === 'connected' ? (
-          <Link to={`/retailers/${retailer.id}`} className="font-medium hover:text-red-600">
+          <Link to={`/retailers/${retailer.id}`} className="font-medium hover:text-primary">
             {retailer.name}
           </Link>
         ) : (
@@ -28,24 +28,29 @@ export const RetailerListItem = ({
         )}
         <p className="text-sm text-gray-500">{retailer.city}, {retailer.state}</p>
       </div>
-      {mode === 'connected' && onDisconnect && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onDisconnect(retailer.id)}
-          className="text-gray-500 hover:text-red-600"
-        >
-          <X className="h-4 w-4" />
-        </Button>
-      )}
-      {mode === 'available' && onConnect && (
-        <Button
-          variant="outline"
-          onClick={() => onConnect(retailer.id)}
-        >
-          Connect
-        </Button>
-      )}
+      <div className="mt-4">
+        {mode === 'connected' && onDisconnect && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onDisconnect(retailer.id)}
+            className="text-gray-500 hover:text-red-600 w-full"
+          >
+            <X className="h-4 w-4 mr-2" />
+            Disconnect
+          </Button>
+        )}
+        {mode === 'available' && onConnect && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onConnect(retailer.id)}
+            className="w-full"
+          >
+            Connect
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
