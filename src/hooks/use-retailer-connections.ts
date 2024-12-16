@@ -49,7 +49,10 @@ export const useRetailerConnections = (player: Player | null) => {
         .eq('player_id', player.id)
         .eq('status', 'active');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching connected retailers:', error);
+        throw error;
+      }
       return data.map(pr => pr.retailers) as Retailer[];
     },
     enabled: !!player?.id,
@@ -59,18 +62,24 @@ export const useRetailerConnections = (player: Player | null) => {
   const { data: availableRetailers, isLoading: isLoadingRetailers } = useQuery({
     queryKey: ['availableRetailers', player?.id],
     queryFn: async () => {
+      if (!player?.id) return [];
+
       const { data, error } = await supabase
         .from('retailers')
         .select('*')
+        .eq('status', 'active')  // Only fetch active retailers
         .order('name');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching available retailers:', error);
+        throw error;
+      }
       
       // Filter out already connected retailers
-      const connectedIds = new Set(connectedRetailers?.map(r => r.id));
+      const connectedIds = new Set((connectedRetailers || []).map(r => r.id));
       return data.filter(retailer => !connectedIds.has(retailer.id));
     },
-    enabled: !!player?.id && !!connectedRetailers,
+    enabled: !!player?.id && !isLoadingConnections,  // Wait for connected retailers to load
   });
 
   // Connect retailer mutation
