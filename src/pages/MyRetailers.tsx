@@ -4,22 +4,56 @@ import { Button } from "@/components/ui/button";
 import { Store } from "lucide-react";
 import { RetailerConnectionsCard } from "@/components/account/RetailerConnectionsCard";
 import type { Player } from "@/types/player";
+import { supabase } from "@/integrations/supabase/client";
 
 const MyRetailers = () => {
   const navigate = useNavigate();
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
 
   useEffect(() => {
-    // Get player data from localStorage
-    const storedPlayer = localStorage.getItem('currentPlayer');
-    if (storedPlayer) {
-      try {
-        const playerData = JSON.parse(storedPlayer);
-        setCurrentPlayer(playerData);
-      } catch (error) {
-        console.error('Error parsing player data:', error);
+    const checkAndLoadPlayer = async () => {
+      // First check localStorage
+      const storedPlayer = localStorage.getItem('currentPlayer');
+      console.log('Stored player data:', storedPlayer);
+      
+      if (storedPlayer) {
+        try {
+          const playerData = JSON.parse(storedPlayer);
+          console.log('Parsed player data:', playerData);
+          setCurrentPlayer(playerData);
+          return;
+        } catch (error) {
+          console.error('Error parsing player data:', error);
+        }
       }
-    }
+
+      // If no stored player, try to fetch from Supabase
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.email) {
+          const { data: player, error } = await supabase
+            .from('players')
+            .select('*')
+            .eq('email', session.user.email)
+            .single();
+
+          if (error) {
+            console.error('Error fetching player:', error);
+            return;
+          }
+
+          if (player) {
+            console.log('Found player in database:', player);
+            localStorage.setItem('currentPlayer', JSON.stringify(player));
+            setCurrentPlayer(player);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking session:', error);
+      }
+    };
+
+    checkAndLoadPlayer();
   }, []);
 
   if (!currentPlayer) {
