@@ -12,8 +12,17 @@ export const PlayerCard = ({ player }: PlayerCardProps) => {
   
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Player Information</CardTitle>
+        {!player && (
+          <Button 
+            variant="destructive"
+            onClick={() => navigate('/create-player')}
+            className="bg-red-500 hover:bg-red-600 text-white"
+          >
+            Create Player Account
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         {player ? (
@@ -37,16 +46,7 @@ export const PlayerCard = ({ player }: PlayerCardProps) => {
           </div>
         ) : (
           <div className="text-center py-4">
-            <p className="text-gray-600 mb-4">No player account found</p>
-            <div className="flex justify-end">
-              <Button 
-                variant="destructive"
-                onClick={() => navigate('/create-player')}
-                className="w-40 h-40 text-lg font-semibold"
-              >
-                Create a Player Account
-              </Button>
-            </div>
+            <p className="text-gray-600">No player account found</p>
           </div>
         )}
       </CardContent>
