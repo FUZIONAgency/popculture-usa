@@ -12,31 +12,36 @@ const Games = () => {
   const { data: campaigns, isLoading } = useQuery({
     queryKey: ['campaigns'],
     queryFn: async () => {
-      const { data: campaignsData, error: campaignsError } = await supabase
+      const { data: campaignsData, error } = await supabase
         .from('campaigns')
-        .select('*')
+        .select(`
+          *,
+          campaign_players!inner (
+            player_id
+          )
+        `)
         .order('created_at', { ascending: false });
-      
-      if (campaignsError) throw campaignsError;
 
-      // Fetch player counts for each campaign
-      const campaignsWithCounts = await Promise.all(
-        campaignsData.map(async (campaign) => {
-          const { count, error: countError } = await supabase
-            .from('campaign_players')
-            .select('*', { count: 'exact', head: true })
-            .eq('campaign_id', campaign.id);
-          
-          if (countError) throw countError;
-          
-          return {
+      if (error) {
+        console.error('Error fetching campaigns:', error);
+        throw error;
+      }
+
+      // Transform the data to count players for each campaign
+      const transformedCampaigns = campaignsData.reduce((acc, campaign) => {
+        const existingCampaign = acc.find(c => c.id === campaign.id);
+        if (existingCampaign) {
+          existingCampaign.current_players = (existingCampaign.current_players || 0) + 1;
+        } else {
+          acc.push({
             ...campaign,
-            current_players: count || 0
-          };
-        })
-      );
+            current_players: 1
+          });
+        }
+        return acc;
+      }, [] as any[]);
 
-      return campaignsWithCounts;
+      return transformedCampaigns;
     },
   });
 
@@ -61,7 +66,7 @@ const Games = () => {
         <div className={`grid gap-6 ${
           isMobile 
             ? 'grid-cols-1' 
-            : 'md:grid-cols-3 lg:grid-cols-5'
+            : 'md:grid-cols-3 lg:grid-cols-4'
         }`}>
           {campaigns?.map((campaign) => (
             <Card key={campaign.id} className="hover:shadow-lg transition-shadow">
