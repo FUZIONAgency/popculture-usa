@@ -35,7 +35,7 @@ export const useRetailerConnections = (player: Player | null) => {
       // First, let's check the player_retailers table directly
       const { data: connections, error: connectionsError } = await supabase
         .from('player_retailers')
-        .select('*')
+        .select('retailer_id')
         .eq('player_id', player.id)
         .eq('status', 'active');
 
@@ -46,45 +46,29 @@ export const useRetailerConnections = (player: Player | null) => {
         throw connectionsError;
       }
 
-      // Now fetch the full retailer data
-      const { data, error } = await supabase
-        .from('retailers')
-        .select('*, player_retailers!inner(*)')
-        .eq('player_retailers.player_id', player.id)
-        .eq('player_retailers.status', 'active');
+      if (!connections || connections.length === 0) {
+        console.log('No connections found for player');
+        return [];
+      }
 
-      console.log('Raw retailer data from join:', data);
+      // Get the retailer IDs
+      const retailerIds = connections.map(conn => conn.retailer_id);
+      console.log('Retailer IDs:', retailerIds);
+
+      // Now fetch the full retailer data
+      const { data: retailers, error } = await supabase
+        .from('retailers')
+        .select('*')
+        .in('id', retailerIds);
+
+      console.log('Raw retailer data:', retailers);
 
       if (error) {
         console.error('Error fetching connected retailers:', error);
         throw error;
       }
 
-      // Clean up the data to match the Retailer type
-      const retailers = data.map(item => ({
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        address: item.address,
-        city: item.city,
-        state: item.state,
-        zip: item.zip,
-        phone: item.phone,
-        email: item.email,
-        website_url: item.website_url,
-        lat: item.lat,
-        lng: item.lng,
-        hours_of_operation: item.hours_of_operation,
-        status: item.status,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-        store_photo: item.store_photo,
-        is_featured: item.is_featured,
-        carousel_image: item.carousel_image
-      }));
-
-      console.log('Connected retailers:', retailers);
-      return retailers;
+      return retailers || [];
     },
     enabled: !!player?.id,
   });
