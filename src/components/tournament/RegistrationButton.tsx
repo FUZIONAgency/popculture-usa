@@ -103,7 +103,7 @@ export function RegistrationButton({ tournamentId, currentPlayer, registration }
       <Button 
         onClick={handleCancelRegistration} 
         variant="destructive"
-        className="w-full bg-red-500 hover:bg-red-600"
+        className="w-full bg-red-500 hover:bg-red-600 text-white"
       >
         Cancel Registration
       </Button>
