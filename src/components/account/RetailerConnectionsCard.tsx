@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, Plus } from "lucide-react";
@@ -12,6 +13,7 @@ interface RetailerConnectionsCardProps {
 }
 
 export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps) => {
+  const navigate = useNavigate();
   const [isConnecting, setIsConnecting] = useState(false);
   
   const {
@@ -55,7 +57,7 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
         {!isConnecting ? (
           <Button
             variant="outline"
-            onClick={() => setIsConnecting(true)}
+            onClick={() => navigate('/my-retailers')}
             className="mt-4"
           >
             <Plus className="h-4 w-4 mr-2" />
