@@ -5,7 +5,7 @@ import type { Retailer } from "@/types/retailer";
 
 interface RetailerListItemProps {
   retailer: Retailer;
-  onDisconnect?: (retailerId: string, playerRetailerId?: string) => void;
+  onDisconnect?: (retailerId: string, playerRetailerId: string) => void;
   onConnect?: (retailerId: string) => void;
   mode: 'connected' | 'available';
   playerRetailerId?: string;
@@ -31,7 +31,7 @@ export const RetailerListItem = ({
         <p className="text-sm text-gray-500">{retailer.city}, {retailer.state}</p>
       </div>
       <div className="mt-4">
-        {mode === 'connected' && onDisconnect && (
+        {mode === 'connected' && onDisconnect && playerRetailerId && (
           <Button
             variant="ghost"
             size="sm"

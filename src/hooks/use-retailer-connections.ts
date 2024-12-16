@@ -138,8 +138,9 @@ export const useRetailerConnections = (player: Player | null) => {
 
   // Disconnect retailer mutation
   const disconnectRetailer = useMutation({
-    mutationFn: async ({ retailerId, playerRetailerId }: { retailerId: string, playerRetailerId?: string }) => {
+    mutationFn: async ({ retailerId, playerRetailerId }: { retailerId: string, playerRetailerId: string }) => {
       if (!player?.id) throw new Error('No player ID');
+      if (!playerRetailerId) throw new Error('No player retailer ID provided');
 
       await verifyPlayerOwnership();
 
