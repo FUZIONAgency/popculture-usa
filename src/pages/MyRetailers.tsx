@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Search } from "lucide-react";
 import { RetailerListItem } from "@/components/account/RetailerListItem";
 import { useRetailerConnections } from "@/hooks/use-retailer-connections";
 import { useRetailersMap } from "@/hooks/use-retailers-map";
@@ -12,7 +13,7 @@ import { toast } from "sonner";
 const MyRetailers = () => {
   const [playerId, setPlayerId] = useState<string | null>(localStorage.getItem('playerId'));
   const [searchQuery, setSearchQuery] = useState('');
-  const [isConnecting, setIsConnecting] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(true);
   const [searchRadius, setSearchRadius] = useState('10');
   
   const {
@@ -59,14 +60,6 @@ const MyRetailers = () => {
     <div className="container py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">My Retailers</h1>
-        <Button 
-          variant="destructive" 
-          onClick={() => setIsConnecting(true)}
-          className="bg-red-600 hover:bg-red-700"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Connect a Retailer
-        </Button>
       </div>
 
       {isLoadingConnections ? (
@@ -90,23 +83,19 @@ const MyRetailers = () => {
         </div>
       )}
 
-      {isConnecting && (
-        <div className="mt-8 space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Available Retailers</h2>
-            <Button
-              variant="ghost"
-              onClick={() => setIsConnecting(false)}
-            >
-              Cancel
-            </Button>
-          </div>
+      <div className="mt-8 space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold">Available Retailers</h2>
+        </div>
 
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
+        <div className="flex gap-4 items-center">
+          <div className="flex-1">
+            <div className="space-y-2">
+              <Label htmlFor="retailer-search">Filter By Name</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
                 <Input
+                  id="retailer-search"
                   placeholder="Search retailers..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -114,34 +103,32 @@ const MyRetailers = () => {
                 />
               </div>
             </div>
-            {!searchQuery && (
-              <MapSearch
-                searchRadius={searchRadius}
-                onSearchRadiusChange={setSearchRadius}
-                onFindNearby={findNearbyRetailers}
-              />
-            )}
           </div>
-
-          {isLoadingRetailers ? (
-            <p>Loading retailers...</p>
-          ) : (
-            <div className="space-y-4">
-              {filteredRetailers?.map((retailer) => (
-                <RetailerListItem
-                  key={retailer.id}
-                  retailer={retailer}
-                  onConnect={(id) => {
-                    connectRetailer.mutate(id);
-                    toast.success('Connected to retailer successfully');
-                  }}
-                  mode="available"
-                />
-              ))}
-            </div>
-          )}
+          <MapSearch
+            searchRadius={searchRadius}
+            onSearchRadiusChange={setSearchRadius}
+            onFindNearby={findNearbyRetailers}
+          />
         </div>
-      )}
+
+        {isLoadingRetailers ? (
+          <p>Loading retailers...</p>
+        ) : (
+          <div className="space-y-4">
+            {filteredRetailers?.map((retailer) => (
+              <RetailerListItem
+                key={retailer.id}
+                retailer={retailer}
+                onConnect={(id) => {
+                  connectRetailer.mutate(id);
+                  toast.success('Connected to retailer successfully');
+                }}
+                mode="available"
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
