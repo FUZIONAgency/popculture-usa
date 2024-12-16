@@ -18,7 +18,25 @@ const CreateGame = () => {
     e.preventDefault();
 
     try {
-      const { data: campaign, error } = await supabase
+      // Get the current user's ID
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      // First, get the player record for the current user
+      const { data: playerData, error: playerError } = await supabase
+        .from('players')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+
+      if (playerError || !playerData) {
+        throw new Error("Player record not found");
+      }
+
+      // Create the campaign
+      const { data: campaign, error: campaignError } = await supabase
         .from('campaigns')
         .insert([
           {
@@ -29,45 +47,43 @@ const CreateGame = () => {
             status: 'active',
             type: 'standard',
             price: 0,
+            game_system_id: '00000000-0000-0000-0000-000000000000' // You might want to make this configurable
           }
         ])
         .select()
         .single();
 
-      if (error) throw error;
-
-      if (campaign) {
-        // Create campaign_players entry for the creator
-        const { data: playerData } = await supabase
-          .from('players')
-          .select('id')
-          .eq('auth_id', (await supabase.auth.getUser()).data.user?.id)
-          .single();
-
-        if (playerData) {
-          await supabase
-            .from('campaign_players')
-            .insert([
-              {
-                campaign_id: campaign.id,
-                player_id: playerData.id,
-                role_type: 'owner',
-                status: 'active',
-              }
-            ]);
-        }
-
-        toast({
-          title: "Success!",
-          description: "Your game has been created.",
-        });
-
-        navigate('/games');
+      if (campaignError || !campaign) {
+        throw campaignError || new Error("Failed to create campaign");
       }
+
+      // Create the campaign_players record for the owner
+      const { error: playerRecordError } = await supabase
+        .from('campaign_players')
+        .insert([
+          {
+            campaign_id: campaign.id,
+            player_id: playerData.id,
+            role_type: 'owner',
+            status: 'active'
+          }
+        ]);
+
+      if (playerRecordError) {
+        throw playerRecordError;
+      }
+
+      toast({
+        title: "Success!",
+        description: "Your game has been created.",
+      });
+
+      navigate('/games');
     } catch (error) {
+      console.error('Error creating game:', error);
       toast({
         title: "Error",
-        description: "Failed to create game. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to create game. Please try again.",
         variant: "destructive",
       });
     }
