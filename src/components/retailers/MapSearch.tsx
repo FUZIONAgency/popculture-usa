@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 interface MapSearchProps {
   searchRadius: string;
@@ -14,18 +13,14 @@ export const MapSearch = ({
   onFindNearby 
 }: MapSearchProps) => {
   return (
-    <div className="flex gap-4 items-end">
-      <div className="space-y-2">
-        <Label htmlFor="search-radius" className="text-left">Miles Range</Label>
-        <Input
-          id="search-radius"
-          type="number"
-          value={searchRadius}
-          onChange={(e) => onSearchRadiusChange(e.target.value)}
-          placeholder="Search radius (miles)"
-          className="w-40"
-        />
-      </div>
+    <div className="flex gap-2">
+      <Input
+        type="number"
+        value={searchRadius}
+        onChange={(e) => onSearchRadiusChange(e.target.value)}
+        placeholder="Search radius (miles)"
+        className="w-40"
+      />
       <Button onClick={onFindNearby}>
         Find Nearby Retailers
       </Button>
