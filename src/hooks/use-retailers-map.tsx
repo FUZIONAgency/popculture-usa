@@ -69,6 +69,11 @@ export const useRetailersMap = (retailers: Retailer[]) => {
           setUserLocation([userLat, userLng]);
           
           const radiusInMiles = parseFloat(searchRadius);
+          if (isNaN(radiusInMiles)) {
+            toast.error("Please enter a valid number for the search radius");
+            return;
+          }
+
           console.log(`User location: ${userLat}, ${userLng}`);
           console.log(`Search radius: ${radiusInMiles} miles`);
 
