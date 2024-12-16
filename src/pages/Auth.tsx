@@ -4,11 +4,37 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
+import type { Player } from "@/types/player";
 
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
+
+  const storePlayerData = async (email: string) => {
+    try {
+      const { data: playerData, error: playerError } = await supabase
+        .from('players')
+        .select('*')
+        .eq('email', email)
+        .single();
+
+      if (playerError && playerError.code !== 'PGRST116') {
+        throw playerError;
+      }
+
+      if (playerData) {
+        // Store player data in localStorage
+        localStorage.setItem('currentPlayer', JSON.stringify(playerData));
+        console.log('Player data stored:', playerData);
+      }
+
+      return playerData;
+    } catch (error) {
+      console.error('Error fetching player data:', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -53,10 +79,15 @@ const AuthPage = () => {
             });
             navigate("/my-account");
           } else {
-            // Existing user - return to previous page
-            toast.success("Welcome back!", {
-              description: "You've been successfully logged in."
-            });
+            // Check and store player data if email exists
+            if (session.user.email) {
+              const playerData = await storePlayerData(session.user.email);
+              
+              // Existing user - return to previous page
+              toast.success("Welcome back!", {
+                description: playerData ? "Player data loaded successfully." : "You've been successfully logged in."
+              });
+            }
             navigate(from);
           }
         } catch (error: any) {
