@@ -14,8 +14,17 @@ export const GameAccountsCard = ({ player, gameAccounts }: GameAccountsCardProps
   
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Game Systems</CardTitle>
+        {player && (
+          <Button 
+            variant="secondary"
+            onClick={() => navigate('/add-game-account')}
+            className="bg-green-500 hover:bg-green-600 text-white"
+          >
+            Add Game
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         {player ? (
@@ -36,14 +45,6 @@ export const GameAccountsCard = ({ player, gameAccounts }: GameAccountsCardProps
             ) : (
               <p className="text-gray-600 mb-4">No game accounts linked</p>
             )}
-            <div className="flex justify-end">
-              <Button 
-                variant="outline"
-                onClick={() => navigate('/add-game-account')}
-              >
-                Add Game
-              </Button>
-            </div>
           </div>
         ) : null}
       </CardContent>
