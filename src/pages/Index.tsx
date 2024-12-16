@@ -29,55 +29,52 @@ const Index = () => {
   useEffect(() => {
     const fetchFeaturedItems = async () => {
       try {
-        // Fetch featured convention
-        const { data: conventionData } = await supabase
-          .from('conventions')
-          .select('id, name, description, carousel_image')
-          .eq('is_featured', true)
-          .single();
-
-        // Fetch featured tournament
-        const { data: tournamentData } = await supabase
-          .from('tournaments')
-          .select('id, title, description, carousel_image')
-          .eq('is_featured', true)
-          .single();
-
-        // Fetch featured retailer
-        const { data: retailerData } = await supabase
-          .from('retailers')
-          .select('id, name, description, carousel_image')
-          .eq('is_featured', true)
-          .single();
+        const [conventionResponse, tournamentResponse, retailerResponse] = await Promise.allSettled([
+          supabase
+            .from('conventions')
+            .select('id, name, description, carousel_image')
+            .eq('is_featured', true)
+            .single(),
+          supabase
+            .from('tournaments')
+            .select('id, title, description, carousel_image')
+            .eq('is_featured', true)
+            .single(),
+          supabase
+            .from('retailers')
+            .select('id, name, description, carousel_image')
+            .eq('is_featured', true)
+            .single()
+        ]);
 
         const items: FeaturedItem[] = [];
         
-        if (conventionData) {
+        if (conventionResponse.status === 'fulfilled' && conventionResponse.value.data) {
           items.push({
-            id: conventionData.id,
-            title: conventionData.name,
-            description: conventionData.description,
-            image_url: conventionData.carousel_image || '',
+            id: conventionResponse.value.data.id,
+            title: conventionResponse.value.data.name,
+            description: conventionResponse.value.data.description,
+            image_url: conventionResponse.value.data.carousel_image || '',
             type: 'convention'
           });
         }
 
-        if (tournamentData) {
+        if (tournamentResponse.status === 'fulfilled' && tournamentResponse.value.data) {
           items.push({
-            id: tournamentData.id,
-            title: tournamentData.title,
-            description: tournamentData.description,
-            image_url: tournamentData.carousel_image || '',
+            id: tournamentResponse.value.data.id,
+            title: tournamentResponse.value.data.title,
+            description: tournamentResponse.value.data.description,
+            image_url: tournamentResponse.value.data.carousel_image || '',
             type: 'tournament'
           });
         }
 
-        if (retailerData) {
+        if (retailerResponse.status === 'fulfilled' && retailerResponse.value.data) {
           items.push({
-            id: retailerData.id,
-            title: retailerData.name,
-            description: retailerData.description,
-            image_url: retailerData.carousel_image || '',
+            id: retailerResponse.value.data.id,
+            title: retailerResponse.value.data.name,
+            description: retailerResponse.value.data.description,
+            image_url: retailerResponse.value.data.carousel_image || '',
             type: 'retailer'
           });
         }
@@ -87,7 +84,7 @@ const Index = () => {
         console.error('Error fetching featured items:', error);
         toast({
           title: "Error",
-          description: "Failed to load featured items",
+          description: "Failed to load featured items. Please try again later.",
           variant: "destructive",
         });
       }
@@ -108,7 +105,7 @@ const Index = () => {
         console.error('Error fetching conventions:', error);
         toast({
           title: "Error",
-          description: "Failed to load conventions",
+          description: "Failed to load conventions. Please try again later.",
           variant: "destructive",
         });
       }

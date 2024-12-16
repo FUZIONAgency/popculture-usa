@@ -31,11 +31,16 @@ const RetailerDetail = () => {
 
       return data;
     },
-    retry: false,
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Failed to load retailer details');
+    retry: 1,
+    meta: {
+      errorMessage: 'Failed to load retailer details'
     }
   });
+
+  // Show error toast when query fails
+  if (error) {
+    toast.error(error instanceof Error ? error.message : 'Failed to load retailer details');
+  }
 
   if (isLoading) {
     return (
