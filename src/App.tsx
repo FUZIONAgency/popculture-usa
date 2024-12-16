@@ -7,7 +7,6 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -52,7 +51,7 @@ const App = () => (
         <ScrollToTop />
         <Routes>
           <Route path="/auth" element={<Auth />} />
-          <Route path="/" element={<Layout><Index /></Layout>} />
+          <Route path="/" element={<Layout><Conventions /></Layout>} />
           <Route path="/tournaments" element={<Layout><Tournaments /></Layout>} />
           <Route path="/tournaments/:id" element={<Layout><TournamentDetail /></Layout>} />
           <Route 
@@ -65,7 +64,7 @@ const App = () => (
               </Layout>
             } 
           />
-          <Route path="/conventions" element={<Layout><Conventions /></Layout>} />
+          <Route path="/conventions" element={<Navigate to="/" replace />} />
           <Route path="/conventions/:id" element={<Layout><ConventionDetail /></Layout>} />
           <Route path="/retailers" element={<Layout><Retailers /></Layout>} />
           <Route path="/retailers/:id" element={<Layout><RetailerDetail /></Layout>} />
