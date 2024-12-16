@@ -33,7 +33,7 @@ export const RetailerListItem = ({
       <div className="mt-4">
         {mode === 'connected' && onDisconnect && playerRetailerId && (
           <Button
-            variant="ghost"
+            variant="destructive"
             size="sm"
             onClick={() => onDisconnect(playerRetailerId)}
             className="text-gray-500 hover:text-red-600 w-full"
