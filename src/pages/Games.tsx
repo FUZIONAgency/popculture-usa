@@ -89,6 +89,33 @@ const Games = () => {
     }
   };
 
+  const handleLeaveGame = async (campaignId: string) => {
+    try {
+      const { error } = await supabase
+        .from('campaign_players')
+        .delete()
+        .eq('campaign_id', campaignId)
+        .eq('player_id', currentPlayer.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success!",
+        description: "You have left the game.",
+      });
+
+      // Refetch campaigns to update the UI
+      refetch();
+    } catch (error) {
+      console.error('Error leaving game:', error);
+      toast({
+        title: "Error",
+        description: "Failed to leave the game. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-8">
@@ -126,13 +153,22 @@ const Games = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                {!campaign.isJoined && campaign.current_players < campaign.max_players && (
+                {campaign.isJoined ? (
                   <Button 
-                    onClick={() => handleJoinGame(campaign.id)}
-                    className="w-full bg-green-500 hover:bg-green-600 text-white"
+                    onClick={() => handleLeaveGame(campaign.id)}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white"
                   >
-                    Join Game
+                    Leave Game
                   </Button>
+                ) : (
+                  campaign.current_players < campaign.max_players && (
+                    <Button 
+                      onClick={() => handleJoinGame(campaign.id)}
+                      className="w-full bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      Join Game
+                    </Button>
+                  )
                 )}
               </CardFooter>
             </Card>
