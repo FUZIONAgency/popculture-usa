@@ -75,10 +75,14 @@ export function RegistrationButton({ tournamentId, currentPlayer, registration }
     updateRegistrationMutation.mutate('registered');
   };
 
+  const handleCreatePlayerProfile = () => {
+    navigate('/my-account');
+  };
+
   if (!currentPlayer) {
     return (
       <Button 
-        disabled
+        onClick={handleCreatePlayerProfile}
         className="w-full"
         variant="secondary"
       >
