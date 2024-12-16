@@ -14,13 +14,34 @@ export const useRetailerConnections = (player: Player | null) => {
       throw new Error('Authentication required');
     }
 
-    // Verify that the player email matches the authenticated user's email
     if (player.email !== session.user.email) {
       throw new Error('Unauthorized access');
     }
 
     return true;
   };
+
+  // Fetch player-retailer connections
+  const { data: playerRetailerConnections } = useQuery({
+    queryKey: ['playerRetailerConnections', player?.id],
+    queryFn: async () => {
+      if (!player?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('player_retailers')
+        .select('id, retailer_id')
+        .eq('player_id', player.id)
+        .eq('status', 'active');
+
+      if (error) {
+        console.error('Error fetching player_retailers:', error);
+        throw error;
+      }
+
+      return data || [];
+    },
+    enabled: !!player?.id,
+  });
 
   // Fetch connected retailers with proper join
   const { data: connectedRetailers, isLoading: isLoadingConnections } = useQuery({
@@ -30,29 +51,16 @@ export const useRetailerConnections = (player: Player | null) => {
       
       console.log('Fetching connected retailers for player:', player.id);
 
-      // First, get all active connections for this player
-      const { data: connections, error: connectionsError } = await supabase
-        .from('player_retailers')
-        .select('retailer_id')
-        .eq('player_id', player.id)
-        .eq('status', 'active');
-
-      if (connectionsError) {
-        console.error('Error fetching player_retailers:', connectionsError);
-        throw connectionsError;
-      }
-
-      console.log('Player retailer connections:', connections);
-
+      const connections = playerRetailerConnections;
+      
       if (!connections || connections.length === 0) {
         console.log('No connections found for player');
         return [];
       }
 
-      // Get the retailer IDs
       const retailerIds = connections.map(conn => conn.retailer_id);
+      console.log('Connected retailer IDs:', retailerIds);
 
-      // Now fetch the full retailer data
       const { data: retailers, error: retailersError } = await supabase
         .from('retailers')
         .select('*')
@@ -66,7 +74,7 @@ export const useRetailerConnections = (player: Player | null) => {
       console.log('Connected retailers:', retailers);
       return retailers || [];
     },
-    enabled: !!player?.id,
+    enabled: !!player?.id && !!playerRetailerConnections,
   });
 
   // Fetch available retailers (excluding already connected ones)
@@ -75,11 +83,9 @@ export const useRetailerConnections = (player: Player | null) => {
     queryFn: async () => {
       if (!player?.id) return [];
 
-      // Get connected retailer IDs
       const connectedIds = (connectedRetailers || []).map(r => r.id);
       console.log('Connected retailer IDs:', connectedIds);
 
-      // Fetch all active retailers that are not in the connected IDs
       const { data: retailers, error } = await supabase
         .from('retailers')
         .select('*')
@@ -121,6 +127,7 @@ export const useRetailerConnections = (player: Player | null) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['connectedRetailers'] });
       queryClient.invalidateQueries({ queryKey: ['availableRetailers'] });
+      queryClient.invalidateQueries({ queryKey: ['playerRetailerConnections'] });
       toast.success('Successfully connected to retailer');
     },
     onError: (error) => {
@@ -131,18 +138,17 @@ export const useRetailerConnections = (player: Player | null) => {
 
   // Disconnect retailer mutation
   const disconnectRetailer = useMutation({
-    mutationFn: async (retailerId: string) => {
+    mutationFn: async ({ retailerId, playerRetailerId }: { retailerId: string, playerRetailerId?: string }) => {
       if (!player?.id) throw new Error('No player ID');
 
       await verifyPlayerOwnership();
 
-      console.log('Disconnecting retailer:', retailerId, 'for player:', player.id);
+      console.log('Disconnecting retailer:', retailerId, 'with connection ID:', playerRetailerId);
 
       const { error } = await supabase
         .from('player_retailers')
         .delete()
-        .eq('player_id', player.id)
-        .eq('retailer_id', retailerId);
+        .eq('id', playerRetailerId);
 
       if (error) {
         console.error('Disconnection error:', error);
@@ -152,6 +158,7 @@ export const useRetailerConnections = (player: Player | null) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['connectedRetailers'] });
       queryClient.invalidateQueries({ queryKey: ['availableRetailers'] });
+      queryClient.invalidateQueries({ queryKey: ['playerRetailerConnections'] });
       toast.success('Successfully disconnected from retailer');
     },
     onError: (error) => {
@@ -167,5 +174,6 @@ export const useRetailerConnections = (player: Player | null) => {
     isLoadingRetailers,
     connectRetailer,
     disconnectRetailer,
+    playerRetailerConnections
   };
 };

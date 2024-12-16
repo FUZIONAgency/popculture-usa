@@ -21,6 +21,7 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
     isLoadingRetailers,
     connectRetailer,
     disconnectRetailer,
+    playerRetailerConnections
   } = useRetailerConnections(player);
 
   if (!player) {
@@ -43,8 +44,11 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
         ) : (
           <RetailerGrid
             retailers={connectedRetailers || []}
-            onDisconnect={(id) => disconnectRetailer.mutate(id)}
+            onDisconnect={(retailerId, playerRetailerId) => 
+              disconnectRetailer.mutate({ retailerId, playerRetailerId })
+            }
             mode="connected"
+            playerRetailerConnections={playerRetailerConnections}
           />
         )}
 

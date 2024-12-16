@@ -5,16 +5,18 @@ import type { Retailer } from "@/types/retailer";
 
 interface RetailerListItemProps {
   retailer: Retailer;
-  onDisconnect?: (retailerId: string) => void;
+  onDisconnect?: (retailerId: string, playerRetailerId?: string) => void;
   onConnect?: (retailerId: string) => void;
   mode: 'connected' | 'available';
+  playerRetailerId?: string;
 }
 
 export const RetailerListItem = ({ 
   retailer, 
   onDisconnect, 
   onConnect, 
-  mode 
+  mode,
+  playerRetailerId 
 }: RetailerListItemProps) => {
   return (
     <div className="flex flex-col h-full justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
@@ -33,7 +35,7 @@ export const RetailerListItem = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onDisconnect(retailer.id)}
+            onClick={() => onDisconnect(retailer.id, playerRetailerId)}
             className="text-gray-500 hover:text-red-600 w-full"
           >
             <X className="h-4 w-4 mr-2" />
