@@ -28,11 +28,10 @@ import MyTournaments from "./pages/MyTournaments";
 import CreatePlayer from "./pages/CreatePlayer";
 import AddGameAccount from "./pages/AddGameAccount";
 import MyRetailers from "./pages/MyRetailers";
+import Games from "./pages/Games";
+import CreateGame from "./pages/CreateGame";
 
 const queryClient = new QueryClient();
-
-// Placeholder components for new routes
-const Games = () => <div>Games Page (Coming Soon)</div>;
 
 const Layout = ({ children }: { children: React.ReactNode }) => (
   <div className="min-h-screen flex flex-col">
@@ -71,6 +70,16 @@ const App = () => (
           <Route path="/retailers" element={<Layout><Retailers /></Layout>} />
           <Route path="/retailers/:id" element={<Layout><RetailerDetail /></Layout>} />
           <Route path="/games" element={<Layout><Games /></Layout>} />
+          <Route 
+            path="/create-game" 
+            element={
+              <Layout>
+                <ProtectedRoute>
+                  <CreateGame />
+                </ProtectedRoute>
+              </Layout>
+            } 
+          />
           <Route path="/blog" element={<Layout><Blog /></Layout>} />
           <Route path="/blog/:slug" element={<Layout><BlogPost /></Layout>} />
           <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
