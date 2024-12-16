@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { RetailersMap } from "@/components/retailers/RetailersMap";
 import { FeaturedRetailer } from "@/components/retailers/FeaturedRetailer";
 import { RecentRetailers } from "@/components/retailers/RecentRetailers";
+import { Loader2 } from "lucide-react";
 
 const Retailers = () => {
-  const { data: featuredRetailer } = useQuery({
+  const { data: featuredRetailer, isLoading: isFeaturedLoading } = useQuery({
     queryKey: ['featuredRetailer'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -20,7 +21,7 @@ const Retailers = () => {
     },
   });
 
-  const { data: recentRetailers } = useQuery({
+  const { data: recentRetailers, isLoading: isRecentLoading } = useQuery({
     queryKey: ['recentRetailers'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -34,7 +35,7 @@ const Retailers = () => {
     },
   });
 
-  const { data: mapRetailers } = useQuery({
+  const { data: mapRetailers, isLoading: isMapLoading } = useQuery({
     queryKey: ['mapRetailers'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -45,6 +46,14 @@ const Retailers = () => {
       return data;
     },
   });
+
+  if (isMapLoading || isFeaturedLoading || isRecentLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 flex justify-center items-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
