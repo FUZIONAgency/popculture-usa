@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, Plus } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import type { Player } from "@/types/player";
 import { useRetailerConnections } from "@/hooks/use-retailer-connections";
-import { RetailerListItem } from "./RetailerListItem";
+import { RetailerGrid } from "../retailers/RetailerGrid";
+import { ConnectRetailerSection } from "../retailers/ConnectRetailerSection";
 
 interface RetailerConnectionsCardProps {
   player: Player | null;
@@ -13,9 +13,6 @@ interface RetailerConnectionsCardProps {
 
 export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps) => {
   const [isConnecting, setIsConnecting] = useState(false);
-  const [nameFilter, setNameFilter] = useState("");
-  const [cityFilter, setCityFilter] = useState("");
-  const [stateFilter, setStateFilter] = useState("");
   
   const {
     connectedRetailers,
@@ -25,20 +22,6 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
     connectRetailer,
     disconnectRetailer,
   } = useRetailerConnections(player);
-
-  useEffect(() => {
-    if (player?.id) {
-      localStorage.setItem('playerId', player.id);
-    }
-  }, [player?.id]);
-
-  const filteredAvailableRetailers = availableRetailers
-    ?.filter(retailer => 
-      retailer.name.toLowerCase().includes(nameFilter.toLowerCase()) &&
-      retailer.city.toLowerCase().includes(cityFilter.toLowerCase()) &&
-      retailer.state.toLowerCase().includes(stateFilter.toLowerCase())
-    )
-    .slice(0, 10); // Limit to top 10 results
 
   if (!player) {
     return null;
@@ -58,16 +41,11 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
         ) : connectedRetailers?.length === 0 ? (
           <p className="text-gray-500">No connected retailers</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {connectedRetailers?.map((retailer) => (
-              <RetailerListItem
-                key={retailer.id}
-                retailer={retailer}
-                onDisconnect={(id) => disconnectRetailer.mutate(id)}
-                mode="connected"
-              />
-            ))}
-          </div>
+          <RetailerGrid
+            retailers={connectedRetailers || []}
+            onDisconnect={(id) => disconnectRetailer.mutate(id)}
+            mode="connected"
+          />
         )}
 
         {!isConnecting ? (
@@ -80,56 +58,12 @@ export const RetailerConnectionsCard = ({ player }: RetailerConnectionsCardProps
             Connect to Retailer
           </Button>
         ) : (
-          <div className="mt-4 space-y-4">
-            <h4 className="font-medium">Select a retailer to connect with:</h4>
-            
-            <div className="flex flex-col md:flex-row md:gap-4 space-y-3 md:space-y-0 w-full">
-              <Input
-                placeholder="Filter by name"
-                value={nameFilter}
-                onChange={(e) => setNameFilter(e.target.value)}
-                className="w-full"
-              />
-              <Input
-                placeholder="Filter by city"
-                value={cityFilter}
-                onChange={(e) => setCityFilter(e.target.value)}
-                className="w-full"
-              />
-              <Input
-                placeholder="Filter by state"
-                value={stateFilter}
-                onChange={(e) => setStateFilter(e.target.value)}
-                className="w-full"
-              />
-            </div>
-
-            {isLoadingRetailers ? (
-              <p>Loading retailers...</p>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {filteredAvailableRetailers?.map((retailer) => (
-                  <RetailerListItem
-                    key={retailer.id}
-                    retailer={retailer}
-                    onConnect={(id) => connectRetailer.mutate(id)}
-                    mode="available"
-                  />
-                ))}
-              </div>
-            )}
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setIsConnecting(false);
-                setNameFilter("");
-                setCityFilter("");
-                setStateFilter("");
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
+          <ConnectRetailerSection
+            availableRetailers={availableRetailers}
+            isLoadingRetailers={isLoadingRetailers}
+            onConnect={(id) => connectRetailer.mutate(id)}
+            onCancel={() => setIsConnecting(false)}
+          />
         )}
       </CardContent>
     </Card>
