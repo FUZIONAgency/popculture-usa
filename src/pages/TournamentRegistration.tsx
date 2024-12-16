@@ -92,7 +92,10 @@ const TournamentRegistration = () => {
             <Button variant="outline" onClick={() => navigate(`/tournaments/${tournamentId}`)}>
               Cancel
             </Button>
-            <Button onClick={() => registerMutation.mutate()}>
+            <Button 
+              className="bg-green-500 hover:bg-green-600 text-white" 
+              onClick={() => registerMutation.mutate()}
+            >
               Confirm Registration
             </Button>
           </div>
