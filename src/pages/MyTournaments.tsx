@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
@@ -8,6 +9,7 @@ import type { Player } from '@/types/player';
 const MyTournaments = () => {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getMyTournaments = async () => {
@@ -36,7 +38,6 @@ const MyTournaments = () => {
               venue,
               location,
               status,
-              tournament_type,
               prize_pool
             )
           `)
@@ -87,7 +88,11 @@ const MyTournaments = () => {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {tournaments.map((tournament) => (
-            <Card key={tournament.id}>
+            <Card 
+              key={tournament.id}
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => navigate(`/tournaments/${tournament.id}`)}
+            >
               <CardHeader>
                 <CardTitle>{tournament.title}</CardTitle>
               </CardHeader>
@@ -100,9 +105,6 @@ const MyTournaments = () => {
                     <p>Location: {tournament.venue}</p>
                     {tournament.prize_pool && (
                       <p>Prize Pool: ${tournament.prize_pool.toLocaleString()}</p>
-                    )}
-                    {tournament.tournament_type && (
-                      <p>Type: {tournament.tournament_type}</p>
                     )}
                     <p className="mt-2 font-medium">Status: {tournament.status}</p>
                   </div>
