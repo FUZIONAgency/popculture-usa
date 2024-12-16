@@ -69,16 +69,22 @@ export const useRetailerConnections = (player: Player | null) => {
     enabled: !!player?.id,
   });
 
-  // Fetch available retailers
+  // Fetch available retailers (excluding already connected ones)
   const { data: availableRetailers, isLoading: isLoadingRetailers } = useQuery({
-    queryKey: ['availableRetailers', player?.id],
+    queryKey: ['availableRetailers', player?.id, connectedRetailers],
     queryFn: async () => {
       if (!player?.id) return [];
 
-      const { data: allRetailers, error } = await supabase
+      // Get connected retailer IDs
+      const connectedIds = (connectedRetailers || []).map(r => r.id);
+      console.log('Connected retailer IDs:', connectedIds);
+
+      // Fetch all active retailers that are not in the connected IDs
+      const { data: retailers, error } = await supabase
         .from('retailers')
         .select('*')
         .eq('status', 'active')
+        .not('id', 'in', `(${connectedIds.join(',')})`)
         .order('name');
 
       if (error) {
@@ -86,9 +92,8 @@ export const useRetailerConnections = (player: Player | null) => {
         throw error;
       }
 
-      // Filter out already connected retailers
-      const connectedIds = new Set((connectedRetailers || []).map(r => r.id));
-      return allRetailers.filter(retailer => !connectedIds.has(retailer.id));
+      console.log('Available retailers:', retailers);
+      return retailers || [];
     },
     enabled: !!player?.id && !isLoadingConnections,
   });
