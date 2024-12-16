@@ -9,52 +9,52 @@ import { supabase } from "@/integrations/supabase/client";
 const MyRetailers = () => {
   const navigate = useNavigate();
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAndLoadPlayer = async () => {
-      // First check localStorage
-      const storedPlayer = localStorage.getItem('currentPlayer');
-      console.log('Stored player data:', storedPlayer);
-      
-      if (storedPlayer) {
-        try {
-          const playerData = JSON.parse(storedPlayer);
-          console.log('Parsed player data:', playerData);
-          setCurrentPlayer(playerData);
-          return;
-        } catch (error) {
-          console.error('Error parsing player data:', error);
-        }
-      }
-
-      // If no stored player, try to fetch from Supabase
+    const fetchCurrentPlayer = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user?.email) {
-          const { data: player, error } = await supabase
-            .from('players')
-            .select('*')
-            .eq('email', session.user.email)
-            .single();
+        
+        if (!session?.user?.email) {
+          navigate('/auth');
+          return;
+        }
 
-          if (error) {
-            console.error('Error fetching player:', error);
-            return;
-          }
+        // Fetch player data using the authenticated user's email
+        const { data: player, error } = await supabase
+          .from('players')
+          .select('*')
+          .eq('email', session.user.email)
+          .single();
 
-          if (player) {
-            console.log('Found player in database:', player);
-            localStorage.setItem('currentPlayer', JSON.stringify(player));
-            setCurrentPlayer(player);
-          }
+        if (error) {
+          console.error('Error fetching player:', error);
+          return;
+        }
+
+        if (player) {
+          console.log('Found player:', player);
+          setCurrentPlayer(player);
+          localStorage.setItem('currentPlayer', JSON.stringify(player));
         }
       } catch (error) {
         console.error('Error checking session:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    checkAndLoadPlayer();
-  }, []);
+    fetchCurrentPlayer();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="container py-8 flex justify-center items-center">
+        <Store className="animate-spin h-8 w-8 text-gray-400" />
+      </div>
+    );
+  }
 
   if (!currentPlayer) {
     return (
