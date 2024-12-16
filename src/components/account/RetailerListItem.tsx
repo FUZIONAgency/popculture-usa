@@ -35,7 +35,7 @@ export const RetailerListItem = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onDisconnect(retailer.id, playerRetailerId)}
+            onClick={() => onDisconnect(playerRetailerId)}
             className="text-gray-500 hover:text-red-600 w-full"
           >
             <X className="h-4 w-4 mr-2" />

@@ -5,7 +5,7 @@ import type { PlayerRetailerConnection } from "@/types/player";
 interface RetailerGridProps {
   retailers: Retailer[];
   onConnect?: (id: string) => void;
-  onDisconnect?: (retailerId: string, playerRetailerId: string) => void;
+  onDisconnect?: (playerRetailerId: string) => void;
   mode: 'connected' | 'available';
   playerRetailerConnections?: PlayerRetailerConnection[];
 }
