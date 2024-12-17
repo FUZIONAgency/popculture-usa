@@ -380,6 +380,24 @@ export type Database = {
         }
         Relationships: []
       }
+      metro: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string | null
@@ -596,6 +614,7 @@ export type Database = {
           is_featured: boolean | null
           lat: number
           lng: number
+          metro_id: string | null
           name: string
           phone: string | null
           state: string
@@ -617,6 +636,7 @@ export type Database = {
           is_featured?: boolean | null
           lat: number
           lng: number
+          metro_id?: string | null
           name: string
           phone?: string | null
           state: string
@@ -638,6 +658,7 @@ export type Database = {
           is_featured?: boolean | null
           lat?: number
           lng?: number
+          metro_id?: string | null
           name?: string
           phone?: string | null
           state?: string

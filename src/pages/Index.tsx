@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from 'react-helmet-async';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { FeaturedCarousel } from "@/components/home/FeaturedCarousel";
@@ -116,10 +117,19 @@ const Index = () => {
   }, [toast]);
 
   return (
-    <div className="min-h-screen">
-      <FeaturedCarousel items={featuredItems} />
-      <UpcomingConventions conventions={conventions} />
-    </div>
+    <>
+      <Helmet>
+        <title>Pop Culture Conventions | Your Ultimate Convention Directory</title>
+        <meta name="description" content="Discover the best pop culture conventions, comic cons, and gaming events. Find upcoming conventions, get event details, and connect with fellow fans." />
+        <meta property="og:title" content="Pop Culture Conventions | Your Ultimate Convention Directory" />
+        <meta property="og:description" content="Discover the best pop culture conventions, comic cons, and gaming events. Find upcoming conventions, get event details, and connect with fellow fans." />
+        <meta name="keywords" content="pop culture conventions, comic con, gaming conventions, anime conventions, cosplay events" />
+      </Helmet>
+      <div className="min-h-screen">
+        <FeaturedCarousel items={featuredItems} />
+        <UpcomingConventions conventions={conventions} />
+      </div>
+    </>
   );
 };
 

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Helmet } from 'react-helmet-async';
 import { supabase } from "@/integrations/supabase/client";
 import { ConventionCalendar } from "@/components/ConventionCalendar";
 import { useNavigate } from "react-router-dom";
@@ -127,40 +128,49 @@ export default function Tournaments() {
   const otherTournaments = tournaments?.filter((t) => t.id !== featuredTournament?.id)?.slice(0, 3) || [];
 
   return (
-    <div className="container py-8 space-y-8">
-      {/* Featured Tournament */}
-      {featuredTournament && (
+    <>
+      <Helmet>
+        <title>Gaming Tournaments | Competitive Gaming Events</title>
+        <meta name="description" content="Join exciting gaming tournaments, compete with players worldwide, and win amazing prizes. Find upcoming tournaments, register for events, and track your progress." />
+        <meta property="og:title" content="Gaming Tournaments | Competitive Gaming Events" />
+        <meta property="og:description" content="Join exciting gaming tournaments, compete with players worldwide, and win amazing prizes. Find upcoming tournaments, register for events, and track your progress." />
+        <meta name="keywords" content="gaming tournaments, esports events, competitive gaming, prize pools, tournament registration" />
+      </Helmet>
+      <div className="container py-8 space-y-8">
+        {/* Featured Tournament */}
+        {featuredTournament && (
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold">Featured Tournament</h2>
+            <TournamentCard tournament={featuredTournament} featured />
+          </div>
+        )}
+
+        {/* Other Tournaments */}
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold">Featured Tournament</h2>
-          <TournamentCard tournament={featuredTournament} featured />
+          <h2 className="text-2xl font-bold">Upcoming Tournaments</h2>
+          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} gap-6`}>
+            {otherTournaments.map((tournament) => (
+              <TournamentCard key={tournament.id} tournament={tournament} />
+            ))}
+          </div>
         </div>
-      )}
 
-      {/* Other Tournaments */}
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Upcoming Tournaments</h2>
-        <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-3'} gap-6`}>
-          {otherTournaments.map((tournament) => (
-            <TournamentCard key={tournament.id} tournament={tournament} />
-          ))}
+        {/* Tournament Calendar */}
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold">Tournament Schedule</h2>
+          <ConventionCalendar
+            type="tournament"
+            conventions={tournaments?.map((t) => ({
+              id: t.id,
+              name: t.title,
+              start_date: t.start_date,
+              end_date: t.end_date,
+              description: t.description,
+              type: 'tournament'
+            })) || []}
+          />
         </div>
       </div>
-
-      {/* Tournament Calendar */}
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Tournament Schedule</h2>
-        <ConventionCalendar
-          type="tournament"
-          conventions={tournaments?.map((t) => ({
-            id: t.id,
-            name: t.title,
-            start_date: t.start_date,
-            end_date: t.end_date,
-            description: t.description,
-            type: 'tournament'
-          })) || []}
-        />
-      </div>
-    </div>
+    </>
   );
 }

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Helmet } from 'react-helmet-async';
 import { supabase } from "@/integrations/supabase/client";
 import { RetailersMap } from "@/components/retailers/RetailersMap";
 import { FeaturedRetailer } from "@/components/retailers/FeaturedRetailer";
@@ -56,16 +57,25 @@ const Retailers = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      {featuredRetailer && <FeaturedRetailer retailer={featuredRetailer} />}
-      {recentRetailers && <RecentRetailers retailers={recentRetailers} />}
-      {mapRetailers && (
-        <section>
-          <h2 className="text-2xl font-bold mb-4">Find Retailers</h2>
-          <RetailersMap retailers={mapRetailers} />
-        </section>
-      )}
-    </div>
+    <>
+      <Helmet>
+        <title>Gaming & Pop Culture Retailers | Find Local Stores</title>
+        <meta name="description" content="Discover local gaming stores, comic shops, and pop culture retailers near you. Find collectibles, games, merchandise, and connect with your local gaming community." />
+        <meta property="og:title" content="Gaming & Pop Culture Retailers | Find Local Stores" />
+        <meta property="og:description" content="Discover local gaming stores, comic shops, and pop culture retailers near you. Find collectibles, games, merchandise, and connect with your local gaming community." />
+        <meta name="keywords" content="gaming stores, comic shops, pop culture retailers, collectibles, local game stores" />
+      </Helmet>
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        {featuredRetailer && <FeaturedRetailer retailer={featuredRetailer} />}
+        {recentRetailers && <RecentRetailers retailers={recentRetailers} />}
+        {mapRetailers && (
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Find Retailers</h2>
+            <RetailersMap retailers={mapRetailers} />
+          </section>
+        )}
+      </div>
+    </>
   );
 };
 
