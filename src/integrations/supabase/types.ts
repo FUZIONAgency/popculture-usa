@@ -200,6 +200,7 @@ export type Database = {
           max_players: number
           min_players: number
           price: number
+          retailer_id: string | null
           status: string | null
           title: string
           type: string | null
@@ -212,6 +213,7 @@ export type Database = {
           max_players?: number
           min_players?: number
           price?: number
+          retailer_id?: string | null
           status?: string | null
           title: string
           type?: string | null
@@ -224,11 +226,20 @@ export type Database = {
           max_players?: number
           min_players?: number
           price?: number
+          retailer_id?: string | null
           status?: string | null
           title?: string
           type?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contact_inquiries: {
         Row: {

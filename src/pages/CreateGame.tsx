@@ -5,6 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import type { Retailer } from "@/types/retailer";
 
 const CreateGame = () => {
   const navigate = useNavigate();
@@ -13,6 +22,22 @@ const CreateGame = () => {
   const [description, setDescription] = useState("");
   const [minPlayers, setMinPlayers] = useState(2);
   const [maxPlayers, setMaxPlayers] = useState(4);
+  const [selectedRetailerId, setSelectedRetailerId] = useState<string | null>(null);
+
+  // Fetch retailers for the select box
+  const { data: retailers, isLoading: isLoadingRetailers } = useQuery({
+    queryKey: ['retailers'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('retailers')
+        .select('*')
+        .eq('status', 'active')
+        .order('name');
+
+      if (error) throw error;
+      return data as Retailer[];
+    }
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +62,8 @@ const CreateGame = () => {
             status: 'active',
             type: 'standard',
             price: 0,
-            game_system_id: '00000000-0000-0000-0000-000000000000' // You might want to make this configurable
+            game_system_id: '00000000-0000-0000-0000-000000000000', // You might want to make this configurable
+            retailer_id: selectedRetailerId // Add the selected retailer ID
           }
         ])
         .select()
@@ -84,6 +110,26 @@ const CreateGame = () => {
       <h1 className="text-4xl font-bold mb-8 text-center">Create a New Game</h1>
       
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Retailer (Optional)</label>
+          <Select
+            value={selectedRetailerId || ""}
+            onValueChange={(value) => setSelectedRetailerId(value || null)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a retailer (optional)" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">No retailer</SelectItem>
+              {retailers?.map((retailer) => (
+                <SelectItem key={retailer.id} value={retailer.id}>
+                  {retailer.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <div>
           <label className="block text-sm font-medium mb-2">Title</label>
           <Input
