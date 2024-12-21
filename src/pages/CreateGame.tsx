@@ -5,15 +5,22 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import type { Retailer } from "@/types/retailer";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { cn } from "@/lib/utils";
 
 const CreateGame = () => {
   const navigate = useNavigate();
@@ -23,6 +30,8 @@ const CreateGame = () => {
   const [minPlayers, setMinPlayers] = useState(2);
   const [maxPlayers, setMaxPlayers] = useState(4);
   const [selectedRetailerId, setSelectedRetailerId] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   // Fetch retailers for the select box
   const { data: retailers, isLoading: isLoadingRetailers } = useQuery({
@@ -38,6 +47,8 @@ const CreateGame = () => {
       return data as Retailer[];
     }
   });
+
+  const selectedRetailer = retailers?.find(r => r.id === selectedRetailerId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,8 +73,8 @@ const CreateGame = () => {
             status: 'active',
             type: 'standard',
             price: 0,
-            game_system_id: '00000000-0000-0000-0000-000000000000', // You might want to make this configurable
-            retailer_id: selectedRetailerId === 'no-retailer' ? null : selectedRetailerId // Add the selected retailer ID
+            game_system_id: '00000000-0000-0000-0000-000000000000',
+            retailer_id: selectedRetailerId
           }
         ])
         .select()
@@ -105,6 +116,12 @@ const CreateGame = () => {
     }
   };
 
+  const filteredRetailers = retailers?.filter(retailer => 
+    searchValue.length >= 3 ? 
+    retailer.name.toLowerCase().includes(searchValue.toLowerCase()) : 
+    true
+  ) || [];
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <h1 className="text-4xl font-bold mb-8 text-center">Create a New Game</h1>
@@ -112,25 +129,66 @@ const CreateGame = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium mb-2">Retailer (Optional)</label>
-          <Select
-            value={selectedRetailerId || "no-retailer"}
-            onValueChange={(value) => setSelectedRetailerId(value === "no-retailer" ? null : value)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a retailer (optional)" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="no-retailer">No retailer</SelectItem>
-              {retailers?.map((retailer) => (
-                <SelectItem key={retailer.id} value={retailer.id}>
-                  {retailer.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full justify-between"
+              >
+                {selectedRetailer?.name ?? "Select retailer..."}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput 
+                  placeholder="Search retailer..." 
+                  value={searchValue}
+                  onValueChange={setSearchValue}
+                />
+                <CommandEmpty>No retailer found.</CommandEmpty>
+                <CommandGroup>
+                  <CommandItem
+                    value="clear"
+                    onSelect={() => {
+                      setSelectedRetailerId(null);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        !selectedRetailerId ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    No retailer
+                  </CommandItem>
+                  {filteredRetailers.map((retailer) => (
+                    <CommandItem
+                      key={retailer.id}
+                      value={retailer.name}
+                      onSelect={() => {
+                        setSelectedRetailerId(retailer.id);
+                        setOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          selectedRetailerId === retailer.id ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {retailer.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
 
-        {/* ... keep existing code (rest of the form) */}
         <div>
           <label className="block text-sm font-medium mb-2">Title</label>
           <Input
