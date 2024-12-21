@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,7 +63,7 @@ const CreateGame = () => {
             type: 'standard',
             price: 0,
             game_system_id: '00000000-0000-0000-0000-000000000000', // You might want to make this configurable
-            retailer_id: selectedRetailerId // Add the selected retailer ID
+            retailer_id: selectedRetailerId === 'no-retailer' ? null : selectedRetailerId // Add the selected retailer ID
           }
         ])
         .select()
@@ -113,14 +113,14 @@ const CreateGame = () => {
         <div>
           <label className="block text-sm font-medium mb-2">Retailer (Optional)</label>
           <Select
-            value={selectedRetailerId || ""}
-            onValueChange={(value) => setSelectedRetailerId(value || null)}
+            value={selectedRetailerId || "no-retailer"}
+            onValueChange={(value) => setSelectedRetailerId(value === "no-retailer" ? null : value)}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a retailer (optional)" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">No retailer</SelectItem>
+              <SelectItem value="no-retailer">No retailer</SelectItem>
               {retailers?.map((retailer) => (
                 <SelectItem key={retailer.id} value={retailer.id}>
                   {retailer.name}
@@ -130,6 +130,7 @@ const CreateGame = () => {
           </Select>
         </div>
 
+        {/* ... keep existing code (rest of the form) */}
         <div>
           <label className="block text-sm font-medium mb-2">Title</label>
           <Input
