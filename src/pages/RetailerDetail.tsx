@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink, Loader2, Phone } from "lucide-react";
 import { toast } from "sonner";
 
 const RetailerDetail = () => {
@@ -36,6 +36,12 @@ const RetailerDetail = () => {
       errorMessage: 'Failed to load retailer details'
     }
   });
+
+  const handlePhoneClick = (phone: string) => {
+    // Format phone number to remove any non-numeric characters
+    const formattedPhone = phone.replace(/\D/g, '');
+    window.location.href = `tel:${formattedPhone}`;
+  };
 
   // Show error toast when query fails
   if (error) {
@@ -90,7 +96,20 @@ const RetailerDetail = () => {
             <p><strong>City:</strong> {retailer.city}</p>
             <p><strong>State:</strong> {retailer.state}</p>
             <p><strong>ZIP:</strong> {retailer.zip}</p>
-            {retailer.phone && <p><strong>Phone:</strong> {retailer.phone}</p>}
+            {retailer.phone && (
+              <div className="flex items-center gap-2">
+                <strong>Phone:</strong>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePhoneClick(retailer.phone!)}
+                  className="flex items-center gap-2"
+                >
+                  <Phone className="h-4 w-4" />
+                  {retailer.phone}
+                </Button>
+              </div>
+            )}
             {retailer.email && <p><strong>Email:</strong> {retailer.email}</p>}
           </div>
 
